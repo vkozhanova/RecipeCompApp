@@ -10,15 +10,15 @@ import com.example.recipecompapp.ui.theme.RecipeCompAppTheme
 
 @Composable
 fun RecipesApp() {
-        RecipeCompAppTheme {
-            Scaffold { paddingValues ->
-                Text(
-                    text = "Recipes App",
-                    modifier = Modifier.padding(paddingValues)
-                )
-            }
+    RecipeCompAppTheme {
+        Scaffold { paddingValues ->
+            Text(
+                text = "Recipes App",
+                modifier = Modifier.padding(paddingValues)
+            )
         }
     }
+}
 
 @Preview
 @Composable
