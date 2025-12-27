@@ -1,4 +1,4 @@
-package com.example.recipecompapp.ui
+package com.example.recipecompapp.ui.favorites
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
