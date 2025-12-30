@@ -9,8 +9,8 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
-import com.example.recipecompapp.ui.CategoriesScreen
-import com.example.recipecompapp.ui.FavoritesScreen
+import com.example.recipecompapp.ui.categories.CategoriesScreen
+import com.example.recipecompapp.ui.favorites.FavoritesScreen
 import com.example.recipecompapp.ui.navigation.BottomNavigation
 import com.example.recipecompapp.ui.theme.RecipeCompAppTheme
 
