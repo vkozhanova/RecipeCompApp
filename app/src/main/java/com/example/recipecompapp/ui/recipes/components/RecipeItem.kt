@@ -1,4 +1,4 @@
-package com.example.recipecompapp.ui.recipes.components
+package com.example.recipecompapp.core.ui.recipes.components
 
 class RecipeItem {
 }

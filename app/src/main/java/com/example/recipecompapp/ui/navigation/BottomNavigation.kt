@@ -1,4 +1,4 @@
-package com.example.recipecompapp.ui.navigation
+package com.example.recipecompapp.navigation
 
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer

@@ -1,4 +1,4 @@
-package com.example.recipecompapp.ui
+package com.example.recipecompapp.core.ui.screenheader
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background

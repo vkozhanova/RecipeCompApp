@@ -11,27 +11,30 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.recipecompapp.R
-import com.example.recipecompapp.ui.ScreenHeader
+import com.example.recipecompapp.core.ui.screenheader.ScreenHeader
+import com.example.recipecompapp.ui.theme.RecipeCompAppTheme
 
 @Composable
 fun CategoriesScreen(
     modifier: Modifier = Modifier,
 ) {
-    Column(
-        modifier = modifier
-            .fillMaxSize()
-            .background(MaterialTheme.colorScheme.background)
-    ) {
-        ScreenHeader(
-            imageResId = R.drawable.bcg_categories,
-            badgeText = "Категории",
-        )
-        LazyColumn(
-            modifier = Modifier
+    RecipeCompAppTheme {
+        Column(
+            modifier = modifier
                 .fillMaxSize()
-                .padding(16.dp)
+                .background(MaterialTheme.colorScheme.background)
         ) {
+            ScreenHeader(
+                imageResId = R.drawable.bcg_categories,
+                badgeText = "Категории",
+            )
+            LazyColumn(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(16.dp)
+            ) {
 
+            }
         }
     }
 }
@@ -39,5 +42,7 @@ fun CategoriesScreen(
 @Preview
 @Composable
 fun CategoriesScreenPreview() {
-    CategoriesScreen()
+    RecipeCompAppTheme {
+        CategoriesScreen()
+    }
 }
