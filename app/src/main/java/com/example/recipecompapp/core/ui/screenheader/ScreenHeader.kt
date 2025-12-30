@@ -20,6 +20,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.recipecompapp.R
+import com.example.recipecompapp.ui.theme.RecipeCompAppTheme
 import com.example.recipecompapp.ui.theme.recipesAppTypography
 
 @Composable
@@ -60,7 +61,7 @@ fun ScreenHeader(
 @Preview(showBackground = true)
 @Composable
 fun ScreenHeaderPreview() {
-    MaterialTheme {
+    RecipeCompAppTheme {
         ScreenHeader(
             imageResId = R.drawable.bcg_categories,
             badgeText = "Заголовок хедера"

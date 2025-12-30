@@ -1,4 +1,4 @@
-package com.example.recipecompapp.core.ui.recipes
+package com.example.recipecompapp.ui.recipes
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
@@ -19,30 +19,29 @@ import com.example.recipecompapp.ui.theme.RecipeCompAppTheme
 fun RecipesScreen(
     modifier: Modifier = Modifier,
 ) {
-    RecipeCompAppTheme {
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .background(MaterialTheme.colorScheme.background)
-        ) {
-            ScreenHeader(
-                imageResId = R.drawable.bcg_categories,
-                badgeText = "Рецепты",
-            )
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(MaterialTheme.colorScheme.background)
+    ) {
+        ScreenHeader(
+            imageResId = R.drawable.bcg_categories,
+            badgeText = "Рецепты",
+        )
 
-            Spacer(modifier = Modifier.padding(16.dp))
+        Spacer(modifier = Modifier.padding(16.dp))
 
-            Text(
-                text = "Скоро здесь будут рецепты"
-            )
-        }
+        Text(
+            text = "Скоро здесь будут рецепты"
+        )
     }
 }
+
 
 @Preview
 @Composable
 fun RecipesScreenPreview() {
-    RecipeCompAppTheme{
+    RecipeCompAppTheme {
         RecipesScreen()
     }
 }
