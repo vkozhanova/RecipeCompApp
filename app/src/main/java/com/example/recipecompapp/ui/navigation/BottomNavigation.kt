@@ -23,6 +23,7 @@ import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.recipecompapp.R
+import com.example.recipecompapp.ui.theme.RecipeCompAppTheme
 import com.example.recipecompapp.ui.theme.recipesAppTypography
 
 @Composable
@@ -131,8 +132,10 @@ fun NavigationButtonIcon(
 @Preview
 @Composable
 fun BottomNavigationPreview() {
-    BottomNavigation(
-        onFavoriteClick = {},
-        onCategoriesClick = {}
-    )
+    RecipeCompAppTheme {
+        BottomNavigation(
+            onFavoriteClick = {},
+            onCategoriesClick = {}
+        )
+    }
 }

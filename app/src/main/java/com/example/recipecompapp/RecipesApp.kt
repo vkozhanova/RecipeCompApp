@@ -1,6 +1,6 @@
 package com.example.recipecompapp
 
-import androidx.compose.foundation.layout.padding
+import  androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -38,6 +38,10 @@ fun RecipesApp() {
                 ScreenId.CATEGORIES -> CategoriesScreen(
                     modifier = Modifier.padding(paddingValues)
                 )
+
+                else -> {
+                    currentScreen == ScreenId.CATEGORIES
+                }
             }
         }
     }
