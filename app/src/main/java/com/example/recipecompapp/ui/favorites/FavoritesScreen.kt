@@ -30,7 +30,10 @@ fun FavoritesScreen(
                badgeText = "Избранное",
            )
            LazyColumn(
-               modifier = Modifier.fillMaxWidth().padding(16.dp)
+               modifier = Modifier
+                   .fillMaxWidth()
+                   .then(modifier)
+                   .padding(16.dp)
            ) {
 
            }
