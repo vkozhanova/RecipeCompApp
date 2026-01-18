@@ -3,7 +3,7 @@ package com.example.recipecompapp.data.model
 import kotlinx.serialization.Serializable
 
 @Serializable
-class RecipeDto(
+data class RecipeDto(
     val id: Int,
     val title: String,
     val ingredients: List<IngredientDto> = emptyList(),
