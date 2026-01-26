@@ -5,7 +5,7 @@ import com.example.recipecompapp.data.model.IngredientDto
 import com.example.recipecompapp.data.model.RecipeDto
 
 object RecipesRepositoryStub {
-    val categories = listOf(
+    private val categories = listOf(
         CategoryDto(
             id = 0,
             title = "Бургеры",
@@ -56,7 +56,7 @@ object RecipesRepositoryStub {
         )
     )
 
-    val burgerRecipes = listOf(
+    private val burgerRecipes = listOf(
         RecipeDto(
             id = 0,
             title = "Классический бургер с говядиной",
