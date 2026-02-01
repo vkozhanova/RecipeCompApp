@@ -17,11 +17,11 @@ import androidx.compose.material3.Card
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
@@ -31,7 +31,6 @@ import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import com.example.recipecompapp.R
-import com.example.recipecompapp.ui.Constants.ASSETS_URI_PREFIX
 import com.example.recipecompapp.ui.theme.recipesAppTypography
 
 @Composable
@@ -43,6 +42,13 @@ fun CategoryItem(
     modifier: Modifier = Modifier,
 ) {
     val context = LocalContext.current
+    val imageRequest = remember(image) {
+        ImageRequest.Builder(context)
+            .data(image)
+            .crossfade(true)
+            .build()
+    }
+
     Card(
         modifier = modifier
             .size(width = 156.dp, height = 220.dp)
@@ -51,8 +57,8 @@ fun CategoryItem(
                 elevation = 4.dp,
                 shape = RoundedCornerShape(8.dp),
                 clip = true,
-                ambientColor = Color(0x66000000),
-                spotColor = Color(0x66000000)
+                ambientColor = MaterialTheme.colorScheme.onSurfaceVariant,
+                spotColor = MaterialTheme.colorScheme.onSurfaceVariant
             ),
         shape = RoundedCornerShape(8.dp),
     ) {
@@ -62,10 +68,7 @@ fun CategoryItem(
             horizontalAlignment = Alignment.Start
         ) {
             AsyncImage(
-                model = ImageRequest.Builder(context)
-                    .data(image)
-                    .crossfade(true)
-                    .build(),
+                model = imageRequest,
                 contentDescription = title,
                 modifier = Modifier
                     .fillMaxWidth()
