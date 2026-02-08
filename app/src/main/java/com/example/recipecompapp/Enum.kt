@@ -1,8 +1,7 @@
 package com.example.recipecompapp
 
-enum class ScreenId(
-    val route: String,
-) {
-    CATEGORIES("categories"),
-    FAVORITES("favorites"),
+enum class ScreenId() {
+    CATEGORIES,
+    FAVORITES,
+    RECIPES,
 }
