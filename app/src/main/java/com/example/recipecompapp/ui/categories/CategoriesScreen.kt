@@ -24,7 +24,7 @@ import com.example.recipecompapp.ui.theme.RecipeCompAppTheme
 @Composable
 fun CategoriesScreen(
     modifier: Modifier = Modifier,
-    onCategoryClick: (Int) -> Unit = {}
+    onCategoryClick: (Int, String) -> Unit = {_, _ ->}
 ) {
     val categories = RecipesRepositoryStub.getCategories()
     val uiCategories = categories.map { it.toUiModel() }
@@ -56,7 +56,8 @@ fun CategoriesScreen(
                         image = category.imageUrl,
                         title = category.title,
                         description = category.description,
-                        onClick = { onCategoryClick(category.id) },
+                        onClick = {
+                            onCategoryClick(category.id, category.title) },
                         modifier = Modifier
                     )
                 }

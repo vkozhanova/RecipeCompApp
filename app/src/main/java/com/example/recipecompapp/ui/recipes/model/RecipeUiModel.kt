@@ -17,10 +17,18 @@ data class RecipeUiModel(
 
 fun RecipeDto.toUiModel(): RecipeUiModel {
     val processedImageUrl = when {
-        this.imageUrl?.startsWith("http") == true -> this.imageUrl
-        this.imageUrl != null -> ASSETS_URI_PREFIX + this.imageUrl
-        else -> null
+        this.imageUrl?.startsWith("http") == true -> {
+            this.imageUrl
+        }
+        this.imageUrl != null -> {
+            val assetUrl = ASSETS_URI_PREFIX + this.imageUrl
+            assetUrl
+        }
+        else -> {
+            null
+        }
     }
+
     val uiIngredients = this.ingredients.map { it.toUiModel() }
 
     return RecipeUiModel(
