@@ -1,5 +1,6 @@
 package com.example.recipecompapp
 
+import android.util.Log
 import  androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
@@ -47,7 +48,7 @@ fun RecipesApp() {
                     CategoriesScreen(
                         modifier = Modifier.padding(paddingValues),
                         onCategoryClick = { categoryId, categoryTitle ->
-                            println("DEBUG RecipesApp: Клик по категории - id=$categoryId, title=$categoryTitle")
+                            Log.d("DEBUG", "Клик по категории - id=$categoryId, title=$categoryTitle")
                             selectedCategoryId = categoryId
                             selectedCategoryTitle = categoryTitle
                             currentScreen = ScreenId.RECIPES
