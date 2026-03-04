@@ -114,13 +114,31 @@ object RecipesRepositoryStub {
                 "4. Смазать нижние половинки булочек горчицей и кетчупом, затем положите лист салата, котлету, кольца помидора и закройте верхней половинкой булочки.",
                 "5. Подавайте бургеры горячими с картофельными чипсами или картофельным пюре."
             ),
-            imageUrl = "https://images.google.com"
+            imageUrl = "burger_hamburger.png"
         )
     )
 
+    private val dessertsRecipes: List<RecipeDto> = listOf()
+    private val pizzaRecipes: List<RecipeDto> = listOf()
+    private val fishRecipes: List<RecipeDto> = listOf()
+    private val soupRecipes: List<RecipeDto> = listOf()
+    private val saladRecipes: List<RecipeDto> = listOf()
+    private val breakfastRecipes: List<RecipeDto> = listOf()
+    private val pastaRecipes: List<RecipeDto> = listOf()
+
     fun getCategories(): List<CategoryDto> = categories
 
-    fun getRecipesByCategoryId(categoryId: Int): List<RecipeDto> {
-        return if (categoryId == 0) burgerRecipes else emptyList()
+    fun getRecipesByCategoryId(categoryId: Int?): List<RecipeDto> {
+        return when (categoryId) {
+            0 -> burgerRecipes
+            1 -> dessertsRecipes
+            2 -> pizzaRecipes
+            3 -> fishRecipes
+            4 -> soupRecipes
+            5 -> saladRecipes
+            6 -> breakfastRecipes
+            7 -> pastaRecipes
+            else -> emptyList()
+        }
     }
 }
