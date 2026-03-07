@@ -35,14 +35,16 @@ import com.example.recipecompapp.ui.theme.RecipeCompAppTheme
 @Composable
 fun RecipesScreen(
     categoryId: Int,
-    categoryTitle: String,
     onRecipeClick: (Int) -> Unit,
     modifier: Modifier = Modifier,
 ) {
+    var categoryTitle by remember { mutableStateOf("") }
     var recipes by remember { mutableStateOf<List<RecipeUiModel>>(emptyList()) }
     var isLoading by remember { mutableStateOf(true) }
 
     LaunchedEffect(categoryId) {
+        val categories = RecipesRepositoryStub.getCategories()
+        categoryTitle = categories.find { it.id == categoryId }?.title ?: "Категория"
         isLoading = true
         try {
             val recipesDto = RecipesRepositoryStub.getRecipesByCategoryId(categoryId)
