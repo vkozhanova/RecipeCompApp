@@ -1,10 +1,13 @@
 package com.example.recipecompapp.ui.recipes.model
 
+import android.os.Parcelable
 import androidx.compose.runtime.Immutable
 import com.example.recipecompapp.data.model.RecipeDto
 import com.example.recipecompapp.ui.Constants.ASSETS_URI_PREFIX
+import kotlinx.parcelize.Parcelize
 import kotlin.Int
 
+@Parcelize
 @Immutable
 data class RecipeUiModel(
     val id: Int,
@@ -13,17 +16,19 @@ data class RecipeUiModel(
     val method: List<String>,
     val imageUrl: String?,
     val isFavorite: Boolean = false
-)
+) : Parcelable
 
 fun RecipeDto.toUiModel(): RecipeUiModel {
     val processedImageUrl = when {
         this.imageUrl?.startsWith("http") == true -> {
             this.imageUrl
         }
+
         this.imageUrl != null -> {
             val assetUrl = ASSETS_URI_PREFIX + this.imageUrl
             assetUrl
         }
+
         else -> {
             null
         }
