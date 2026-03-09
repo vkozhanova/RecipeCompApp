@@ -35,7 +35,7 @@ import com.example.recipecompapp.ui.theme.RecipeCompAppTheme
 @Composable
 fun RecipesScreen(
     categoryId: Int,
-    onRecipeClick: (Int) -> Unit,
+    onRecipeClick: (Int, RecipeUiModel) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     var categoryTitle by remember { mutableStateOf("") }
@@ -100,7 +100,7 @@ fun RecipesScreen(
                     items(recipes, key = { it.id }) { recipe ->
                         RecipeItem(
                             recipe = recipe,
-                            onClick = onRecipeClick,
+                            onClick = { onRecipeClick(recipe.id, recipe) },
                             modifier = Modifier.fillMaxWidth()
                         )
                     }
