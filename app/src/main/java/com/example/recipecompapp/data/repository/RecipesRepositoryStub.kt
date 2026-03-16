@@ -141,4 +141,11 @@ object RecipesRepositoryStub {
             else -> emptyList()
         }
     }
+
+    fun getRecipeById(id: Int): RecipeDto? {
+        val allRecipes = categories.flatMap { category ->
+            getRecipesByCategoryId(category.id)
+        }
+        return allRecipes.find { it.id == id }
+    }
 }
