@@ -16,9 +16,7 @@ import com.example.recipecompapp.ui.details.RecipeDetailsScreen
 import com.example.recipecompapp.ui.favorites.FavoritesScreen
 import com.example.recipecompapp.ui.navigation.BottomNavigation
 import com.example.recipecompapp.ui.navigation.Destination
-import com.example.recipecompapp.ui.navigation.KEY_RECIPE_OBJECT
 import com.example.recipecompapp.ui.recipes.RecipesScreen
-import com.example.recipecompapp.ui.recipes.model.RecipeUiModel
 import com.example.recipecompapp.ui.theme.RecipeCompAppTheme
 
 @Composable
@@ -53,7 +51,7 @@ fun RecipesApp() {
                         onCategoryClick = { categoryId, _ ->
                             navController.navigate(Destination.Recipes.createRoute(categoryId))
                         },
-                        )
+                    )
                 }
 
                 composable(
@@ -63,11 +61,8 @@ fun RecipesApp() {
                     val categoryId = backStackEntry.arguments?.getInt("categoryId") ?: 0
                     RecipesScreen(
                         categoryId = categoryId,
-                        onRecipeClick = { recipeId, recipe ->
+                        onRecipeClick = { recipeId, _ ->
                             Log.d("DEBUG", "Клик по рецепту $recipeId")
-                            navController.currentBackStackEntry?.savedStateHandle?.set(
-                                KEY_RECIPE_OBJECT, recipe
-                            )
                             navController.navigate(Destination.RecipeDetails.createRoute(recipeId))
                         }
                     )
@@ -80,21 +75,18 @@ fun RecipesApp() {
                 composable(
                     route = Destination.RecipeDetails.route,
                     arguments = listOf(navArgument("recipeId") { type = NavType.IntType })
-                ) { _ ->
-                    val recipe = navController.previousBackStackEntry
-                        ?.savedStateHandle
-                        ?.get<RecipeUiModel>(KEY_RECIPE_OBJECT)
-
-                    if (recipe != null) {
-                        RecipeDetailsScreen(recipe = recipe)
-                    } else {
-                        Log.e("!!!", "Рецепт не найден")
-                    }
+                ) { backStackEntry ->
+                    val recipeId = backStackEntry.arguments?.getInt("recipeId") ?: 0
+                    RecipeDetailsScreen(
+                        recipeId = recipeId,
+                        onNavigateBack = { navController.popBackStack() }
+                    )
                 }
             }
         }
     }
 }
+
 
 @Preview
 @Composable
