@@ -78,6 +78,7 @@ fun RecipeDetailsContent(
             .verticalScroll(rememberScrollState())
     ) {
         ScreenHeader(
+            imageUrl = recipe.imageUrl,
             imageResId = R.drawable.bcg_categories,
             badgeText = recipe.title,
         )
@@ -212,7 +213,7 @@ fun IngredientItem(
             style = recipesAppTypography.bodyMedium,
         )
         Text(
-            text = ingredient.amount.uppercase(), // единицы измерения тоже заглавные
+            text = ingredient.amount.uppercase(),
             style = recipesAppTypography.bodyMedium,
         )
     }
@@ -237,7 +238,7 @@ fun InstructionsList(
             val bottomPadding = if (isLast) 0.dp else verticalPadding
 
             Text(
-                text = instruction,
+                text = "${index + 1}. $instruction",
                 style = recipesAppTypography.bodyMedium,
                 modifier = Modifier
                     .fillMaxWidth()

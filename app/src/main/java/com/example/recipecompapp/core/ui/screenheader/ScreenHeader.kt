@@ -19,12 +19,14 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import coil.compose.AsyncImage
 import com.example.recipecompapp.R
 import com.example.recipecompapp.ui.theme.RecipeCompAppTheme
 import com.example.recipecompapp.ui.theme.recipesAppTypography
 
 @Composable
 fun ScreenHeader(
+    imageUrl: String? = null,
     imageResId: Int,
     badgeText: String,
     modifier: Modifier = Modifier,
@@ -35,12 +37,22 @@ fun ScreenHeader(
             .height(224.dp)
             .background(Color.White)
     ) {
-        Image(
-            painter = painterResource(id = imageResId),
-            contentDescription = null,
-            contentScale = ContentScale.Crop,
-            modifier = Modifier.fillMaxSize()
-        )
+        if(!imageUrl.isNullOrEmpty()) {
+            AsyncImage(
+                model = imageUrl,
+                contentDescription = null,
+                contentScale = ContentScale.Crop,
+                modifier = Modifier.fillMaxSize(),
+                error = painterResource(id = R.drawable.img_error)
+            )
+        } else {
+            Image(
+                painter = painterResource(id = imageResId),
+                contentDescription = null,
+                contentScale = ContentScale.Crop,
+                modifier = Modifier.fillMaxSize(),
+            )
+        }
         Surface(
             modifier = Modifier
                 .align(Alignment.BottomStart)
