@@ -2,12 +2,15 @@ package com.example.recipecompapp.core.ui.screenheader
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -29,6 +32,8 @@ fun ScreenHeader(
     imageUrl: String? = null,
     imageResId: Int,
     badgeText: String,
+    showShareButton: Boolean = false,
+    onSharedClick: () -> Unit = {},
     modifier: Modifier = Modifier,
 ) {
     Box(
@@ -37,7 +42,7 @@ fun ScreenHeader(
             .height(224.dp)
             .background(Color.White)
     ) {
-        if(!imageUrl.isNullOrEmpty()) {
+        if (!imageUrl.isNullOrEmpty()) {
             AsyncImage(
                 model = imageUrl,
                 contentDescription = null,
@@ -51,6 +56,18 @@ fun ScreenHeader(
                 contentDescription = null,
                 contentScale = ContentScale.Crop,
                 modifier = Modifier.fillMaxSize(),
+            )
+        }
+        if (showShareButton) {
+            Icon(
+                painter = painterResource(R.drawable.share),
+                contentDescription = null,
+                tint = Color.White,
+                modifier = Modifier
+                    .align(Alignment.TopEnd)
+                    .padding(top = 16.dp, end = 16.dp)
+                    .size(40.dp)
+                    .clickable { onSharedClick() }
             )
         }
         Surface(
@@ -76,6 +93,7 @@ fun ScreenHeaderPreview() {
     RecipeCompAppTheme {
         ScreenHeader(
             imageResId = R.drawable.bcg_categories,
+            showShareButton = true,
             badgeText = "Заголовок хедера"
         )
     }
