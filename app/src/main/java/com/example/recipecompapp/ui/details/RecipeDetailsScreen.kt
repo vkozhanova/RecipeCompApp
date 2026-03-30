@@ -12,15 +12,15 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.recipecompapp.R
 import com.example.recipecompapp.core.ui.screenheader.ScreenHeader
-import com.example.recipecompapp.data.repository.RecipesRepositoryStub
+import com.example.recipecompapp.ui.navigation.ShareUtils
 import com.example.recipecompapp.ui.recipes.model.IngredientUiModel
 import com.example.recipecompapp.ui.recipes.model.RecipeUiModel
-import com.example.recipecompapp.ui.recipes.model.toUiModel
 import com.example.recipecompapp.ui.theme.RecipeCompAppTheme
 import com.example.recipecompapp.ui.theme.recipesAppTypography
 import kotlin.math.roundToInt
@@ -29,27 +29,21 @@ private const val DEFAULT_SERVINGS = 2
 
 @Composable
 fun RecipeDetailsScreen(
-    recipeId: Int,
+    recipe: RecipeUiModel,
     onNavigateBack: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    val recipe = remember(recipeId) {
-        RecipesRepositoryStub.getRecipeById(recipeId)?.toUiModel()
-    }
-
-    if (recipe == null) {
-        Text(
-            text = stringResource(R.string.no_recipe),
-            modifier = Modifier.padding(16.dp)
-        )
-        return
-    }
-    RecipeDetailsContent(recipe = recipe, modifier = modifier)
+    val context = LocalContext.current
+    RecipeDetailsContent(
+        recipe = recipe,
+        modifier = modifier,
+        onSharedClick = { ShareUtils.shareRecipe(context, recipe.id, recipe.title) })
 }
 
 @Composable
 fun RecipeDetailsContent(
     recipe: RecipeUiModel,
+    onSharedClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     var currentPortions by remember { mutableStateOf(DEFAULT_SERVINGS) }
@@ -81,6 +75,8 @@ fun RecipeDetailsContent(
             imageUrl = recipe.imageUrl,
             imageResId = R.drawable.bcg_categories,
             badgeText = recipe.title,
+            showShareButton = true,
+            onSharedClick = onSharedClick,
         )
 
         Spacer(modifier = Modifier.height(16.dp))
@@ -281,8 +277,9 @@ fun RecipeDetailsScreenPreview() {
                     "Сформируйте котлеты",
                     "Обжарьте на сковороде"
                 ),
-                imageUrl = null
-            )
+                imageUrl = null,
+            ),
+            onSharedClick = {}
         )
     }
 }
