@@ -10,6 +10,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Slider
 import androidx.compose.material3.Text
 import androidx.compose.runtime.*
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.platform.LocalContext
@@ -30,25 +31,33 @@ private const val DEFAULT_SERVINGS = 2
 @Composable
 fun RecipeDetailsScreen(
     recipe: RecipeUiModel,
+    isFavorite: Boolean,
+    onFavoriteToggle: () -> Unit,
     onNavigateBack: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     val context = LocalContext.current
     RecipeDetailsContent(
         recipe = recipe,
+        isFavorite = isFavorite,
+        onFavoriteClick = onFavoriteToggle,
+        onSharedClick = { ShareUtils.shareRecipe(context, recipe.id, recipe.title) },
         modifier = modifier,
-        onSharedClick = { ShareUtils.shareRecipe(context, recipe.id, recipe.title) })
+
+    )
 }
 
 @Composable
 fun RecipeDetailsContent(
     recipe: RecipeUiModel,
+    isFavorite: Boolean,
+    onFavoriteClick: () -> Unit,
     onSharedClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    var currentPortions by remember { mutableStateOf(DEFAULT_SERVINGS) }
+    var currentPortions by rememberSaveable { mutableStateOf(DEFAULT_SERVINGS) }
 
-    val scaledIngredients = remember(currentPortions) {
+    val scaledIngredients = remember(recipe.ingredients, currentPortions) {
         val multiplier = currentPortions.toDouble() / DEFAULT_SERVINGS
         recipe.ingredients.map { ingredient ->
             val parts = ingredient.amount.split(' ', limit = 2)
@@ -77,6 +86,9 @@ fun RecipeDetailsContent(
             badgeText = recipe.title,
             showShareButton = true,
             onSharedClick = onSharedClick,
+            showFavoriteButton = true,
+            isFavorite = isFavorite,
+            onFavoriteClick = onFavoriteClick,
         )
 
         Spacer(modifier = Modifier.height(16.dp))
@@ -279,6 +291,8 @@ fun RecipeDetailsScreenPreview() {
                 ),
                 imageUrl = null,
             ),
+            isFavorite = true,
+            onFavoriteClick = {},
             onSharedClick = {}
         )
     }
