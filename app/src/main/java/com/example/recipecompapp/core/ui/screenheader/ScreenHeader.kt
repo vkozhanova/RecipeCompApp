@@ -91,7 +91,7 @@ fun ScreenHeader(
                     label = "fav_animation"
                 ) { isFavoriteState ->
                     val heartIcon = ImageVector.vectorResource(
-                        id = if (isFavoriteState) R.drawable.ic_heart else R.drawable.ic_heart_empty
+                        id = if (isFavoriteState) R.drawable.ic_heart else R.drawable.ic_favorite
                     )
                     val painter = rememberVectorPainter(image = heartIcon)
                     Icon(
