@@ -1,5 +1,7 @@
 package com.example.recipecompapp.core.ui.screenheader
 
+import androidx.compose.animation.Crossfade
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -18,8 +20,11 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.graphics.vector.rememberVectorPainter
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
@@ -34,6 +39,9 @@ fun ScreenHeader(
     badgeText: String,
     showShareButton: Boolean = false,
     onSharedClick: () -> Unit = {},
+    showFavoriteButton: Boolean = false,
+    isFavorite: Boolean = false,
+    onFavoriteClick: () -> Unit = {},
     modifier: Modifier = Modifier,
 ) {
     Box(
@@ -70,6 +78,34 @@ fun ScreenHeader(
                     .clickable { onSharedClick() }
             )
         }
+
+        if (showFavoriteButton) {
+            Box(
+                modifier = Modifier
+                    .align(Alignment.TopEnd)
+                    .padding(top = 60.dp, end = 16.dp)
+            ) {
+                Crossfade(
+                    targetState = isFavorite,
+                    animationSpec = tween(300),
+                    label = "fav_animation"
+                ) { isFavoriteState ->
+                    val heartIcon = ImageVector.vectorResource(
+                        id = if (isFavoriteState) R.drawable.ic_heart else R.drawable.ic_favorite
+                    )
+                    val painter = rememberVectorPainter(image = heartIcon)
+                    Icon(
+                        painter = painter,
+                        contentDescription = null,
+                        tint = Color.Unspecified,
+                        modifier = Modifier
+                            .size(40.dp)
+                            .clickable { onFavoriteClick() }
+                    )
+                }
+            }
+        }
+
         Surface(
             modifier = Modifier
                 .align(Alignment.BottomStart)
@@ -94,6 +130,8 @@ fun ScreenHeaderPreview() {
         ScreenHeader(
             imageResId = R.drawable.bcg_categories,
             showShareButton = true,
+            showFavoriteButton = true,
+            isFavorite = true,
             badgeText = "Заголовок хедера"
         )
     }
