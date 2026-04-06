@@ -19,6 +19,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.recipecompapp.R
 import com.example.recipecompapp.core.ui.screenheader.ScreenHeader
+import com.example.recipecompapp.data.util.FavoritePrefsManager
 import com.example.recipecompapp.ui.navigation.ShareUtils
 import com.example.recipecompapp.ui.recipes.model.IngredientUiModel
 import com.example.recipecompapp.ui.recipes.model.RecipeUiModel
@@ -31,20 +32,29 @@ private const val DEFAULT_SERVINGS = 2
 @Composable
 fun RecipeDetailsScreen(
     recipe: RecipeUiModel,
-    isFavorite: Boolean,
-    onFavoriteToggle: () -> Unit,
     onNavigateBack: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     val context = LocalContext.current
+    val prefsManager = remember { FavoritePrefsManager(context) }
+
+    var isFavorite by remember {
+        mutableStateOf(prefsManager.isFavorite(recipe.id))
+    }
+
+    fun onFavoriteClick() {
+        val newState = prefsManager.toggleFavorites(recipe.id)
+        isFavorite = newState
+    }
+
     RecipeDetailsContent(
         recipe = recipe,
         isFavorite = isFavorite,
-        onFavoriteClick = onFavoriteToggle,
+        onFavoriteClick = { onFavoriteClick() },
         onSharedClick = { ShareUtils.shareRecipe(context, recipe.id, recipe.title) },
         modifier = modifier,
 
-    )
+        )
 }
 
 @Composable
