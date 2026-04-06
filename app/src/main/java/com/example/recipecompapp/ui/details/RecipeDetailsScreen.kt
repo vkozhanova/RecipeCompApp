@@ -19,12 +19,14 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.recipecompapp.R
 import com.example.recipecompapp.core.ui.screenheader.ScreenHeader
+import com.example.recipecompapp.data.util.FavoriteDataStoreManager
 import com.example.recipecompapp.data.util.FavoritePrefsManager
 import com.example.recipecompapp.ui.navigation.ShareUtils
 import com.example.recipecompapp.ui.recipes.model.IngredientUiModel
 import com.example.recipecompapp.ui.recipes.model.RecipeUiModel
 import com.example.recipecompapp.ui.theme.RecipeCompAppTheme
 import com.example.recipecompapp.ui.theme.recipesAppTypography
+import kotlinx.coroutines.launch
 import kotlin.math.roundToInt
 
 private const val DEFAULT_SERVINGS = 2
@@ -36,15 +38,19 @@ fun RecipeDetailsScreen(
     modifier: Modifier = Modifier
 ) {
     val context = LocalContext.current
-    val prefsManager = remember { FavoritePrefsManager(context) }
+    val coroutineScope = rememberCoroutineScope()
+    val dataStoreManager = remember { FavoriteDataStoreManager(context) }
 
-    var isFavorite by remember {
-        mutableStateOf(prefsManager.isFavorite(recipe.id))
+    var isFavorite by remember { mutableStateOf(false) }
+
+    LaunchedEffect(recipe.id) {
+        isFavorite = dataStoreManager.isFavorite(recipe.id)
     }
 
     fun onFavoriteClick() {
-        val newState = prefsManager.toggleFavorites(recipe.id)
-        isFavorite = newState
+        coroutineScope.launch {
+            isFavorite = dataStoreManager.toggleFavorite(recipe.id)
+        }
     }
 
     RecipeDetailsContent(
@@ -53,7 +59,6 @@ fun RecipeDetailsScreen(
         onFavoriteClick = { onFavoriteClick() },
         onSharedClick = { ShareUtils.shareRecipe(context, recipe.id, recipe.title) },
         modifier = modifier,
-
         )
 }
 
