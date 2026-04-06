@@ -5,7 +5,6 @@ import androidx.core.content.edit
 
 class FavoritePrefsManager(context: Context) {
     private val prefs = context.getSharedPreferences("recipe_app_prefs", Context.MODE_PRIVATE)
-    private val FAVORITE_IDS_KEY = "favorite_recipe_ids"
 
     fun getAllFavorites(): Set<String> =
         prefs.getStringSet(FAVORITE_IDS_KEY, emptySet()) ?: emptySet()
@@ -37,3 +36,5 @@ class FavoritePrefsManager(context: Context) {
         }
     }
 }
+
+const val FAVORITE_IDS_KEY = "favorite_recipe_ids"
