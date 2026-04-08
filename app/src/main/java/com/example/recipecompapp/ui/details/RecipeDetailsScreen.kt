@@ -20,7 +20,6 @@ import androidx.compose.ui.unit.dp
 import com.example.recipecompapp.R
 import com.example.recipecompapp.core.ui.screenheader.ScreenHeader
 import com.example.recipecompapp.data.util.FavoriteDataStoreManager
-import com.example.recipecompapp.data.util.FavoritePrefsManager
 import com.example.recipecompapp.ui.navigation.ShareUtils
 import com.example.recipecompapp.ui.recipes.model.IngredientUiModel
 import com.example.recipecompapp.ui.recipes.model.RecipeUiModel
