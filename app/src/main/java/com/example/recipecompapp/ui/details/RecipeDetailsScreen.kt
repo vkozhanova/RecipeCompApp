@@ -40,15 +40,13 @@ fun RecipeDetailsScreen(
     val coroutineScope = rememberCoroutineScope()
     val dataStoreManager = remember { FavoriteDataStoreManager(context) }
 
-    var isFavorite by remember { mutableStateOf(false) }
-
-    LaunchedEffect(recipe.id) {
-        isFavorite = dataStoreManager.isFavorite(recipe.id)
-    }
+    val isFavorite by dataStoreManager
+        .isFavoriteFlow(recipe.id)
+        .collectAsState(initial = false)
 
     fun onFavoriteClick() {
         coroutineScope.launch {
-            isFavorite = dataStoreManager.toggleFavorite(recipe.id)
+            dataStoreManager.toggleFavorite(recipe.id)
         }
     }
 
@@ -58,7 +56,7 @@ fun RecipeDetailsScreen(
         onFavoriteClick = { onFavoriteClick() },
         onSharedClick = { ShareUtils.shareRecipe(context, recipe.id, recipe.title) },
         modifier = modifier,
-        )
+    )
 }
 
 @Composable

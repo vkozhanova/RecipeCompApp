@@ -8,7 +8,9 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
@@ -16,6 +18,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.example.recipecompapp.data.repository.RecipesRepositoryStub.getRecipeById
+import com.example.recipecompapp.data.util.FavoriteDataStoreManager
 import com.example.recipecompapp.ui.Constants.DEEP_LINK_BASE_URL
 import com.example.recipecompapp.ui.Constants.DEEP_LINK_SCHEME
 import com.example.recipecompapp.ui.categories.CategoriesScreen
@@ -32,6 +35,9 @@ import kotlinx.coroutines.delay
 fun RecipesApp(deepLinkIntent: Intent?) {
     RecipeCompAppTheme {
         val navController = rememberNavController()
+        val context = LocalContext.current
+        val dataStoreManager = remember { FavoriteDataStoreManager(context) }
+        val favoriteCountFlow = dataStoreManager.getFavoriteCountFlow()
 
         LaunchedEffect(deepLinkIntent) {
             deepLinkIntent?.data?.let { uri ->
@@ -56,6 +62,7 @@ fun RecipesApp(deepLinkIntent: Intent?) {
                             popUpTo(Destination.Favorites.route) { inclusive = true }
                         }
                     },
+                    favoriteCountFlow = favoriteCountFlow
                 )
             }
         ) { paddingValues ->
