@@ -37,7 +37,7 @@ fun RecipesApp(deepLinkIntent: Intent?) {
         val navController = rememberNavController()
         val context = LocalContext.current
         val dataStoreManager = remember { FavoriteDataStoreManager(context) }
-        val favoriteCountFlow = dataStoreManager.getFavoriteCountFlow()
+        val favoriteCountFlow = remember { dataStoreManager.getFavoriteCountFlow() }
 
         LaunchedEffect(deepLinkIntent) {
             deepLinkIntent?.data?.let { uri ->
