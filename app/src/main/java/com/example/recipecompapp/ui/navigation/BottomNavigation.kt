@@ -1,5 +1,6 @@
 package com.example.recipecompapp.ui.navigation
 
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -8,13 +9,17 @@ import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.Badge
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -25,12 +30,16 @@ import androidx.compose.ui.unit.dp
 import com.example.recipecompapp.R
 import com.example.recipecompapp.ui.theme.RecipeCompAppTheme
 import com.example.recipecompapp.ui.theme.recipesAppTypography
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flowOf
 
 @Composable
 fun BottomNavigation(
     onCategoriesClick: () -> Unit,
     onFavoriteClick: () -> Unit,
+    favoriteCountFlow: Flow<Int>,
 ) {
+    val favoriteCount by favoriteCountFlow.collectAsState(initial = 0)
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -56,6 +65,7 @@ fun BottomNavigation(
             buttonColor = MaterialTheme.colorScheme.error,
             textColor = Color.White,
             shape = RoundedCornerShape(8.dp),
+            counter = favoriteCount,
             modifier = Modifier.weight(1f)
         )
     }
@@ -95,6 +105,7 @@ fun NavigationButtonIcon(
     buttonColor: Color,
     textColor: Color,
     shape: RoundedCornerShape,
+    counter: Int,
     modifier: Modifier = Modifier,
 ) {
     Button(
@@ -109,15 +120,13 @@ fun NavigationButtonIcon(
         contentPadding = ButtonDefaults.ButtonWithIconContentPadding,
     ) {
         Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 12.dp),
-            verticalAlignment = Alignment.CenterVertically
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.Center,
+            modifier = Modifier.wrapContentSize()
         ) {
             Text(
                 text = text,
                 style = recipesAppTypography.labelLarge,
-                modifier = Modifier.weight(1f),
             )
 
             Icon(
@@ -125,6 +134,20 @@ fun NavigationButtonIcon(
                 contentDescription = "Favorite icon",
                 modifier = Modifier.size(24.dp),
             )
+
+            if (counter > 0) {
+                Spacer(modifier = Modifier.width(4.dp))
+                Badge(
+                    containerColor = MaterialTheme.colorScheme.tertiary,
+                    modifier = Modifier,
+                ) {
+                    Text(
+                        text = counter.toString(),
+                        style = recipesAppTypography.labelLarge,
+                        modifier = Modifier.padding(horizontal = 4.dp),
+                    )
+                }
+            }
         }
     }
 }
@@ -135,7 +158,8 @@ fun BottomNavigationPreview() {
     RecipeCompAppTheme {
         BottomNavigation(
             onFavoriteClick = {},
-            onCategoriesClick = {}
+            onCategoriesClick = {},
+            favoriteCountFlow = flowOf(3)
         )
     }
 }
