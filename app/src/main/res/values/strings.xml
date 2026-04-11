@@ -3,5 +3,7 @@
     <string name="ingredients">Ингредиенты</string>
     <string name="portions_label">Порции:</string>
     <string name="instructions">Способ приготовления</string>
-    <string name="no_recipe">Рецепт не найден</string>
+    <string name="recipe_not_found">Рецепт не найден</string>
+    <string name="favorites">Избранное</string>
+    <string name="no_favorites">Здесь пока нет рецептов</string>
 </resources>
