@@ -11,12 +11,14 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
+import com.example.recipecompapp.data.repository.RecipesRepositoryStub
 import com.example.recipecompapp.data.repository.RecipesRepositoryStub.getRecipeById
 import com.example.recipecompapp.data.util.FavoriteDataStoreManager
 import com.example.recipecompapp.ui.Constants.DEEP_LINK_BASE_URL
@@ -95,7 +97,13 @@ fun RecipesApp(deepLinkIntent: Intent?) {
                 }
 
                 composable(Destination.Favorites.route) {
-                    FavoritesScreen()
+                    FavoritesScreen(
+                        repository = RecipesRepositoryStub,
+                        favoritesManager = dataStoreManager,
+                        onRecipeClick = { recipeId ->
+                            navController.navigate(Destination.RecipeDetails.createRoute(recipeId))
+                        }
+                    )
                 }
 
                 composable(
@@ -110,7 +118,9 @@ fun RecipesApp(deepLinkIntent: Intent?) {
                             onNavigateBack = { navController.popBackStack() }
                         )
                     } else {
-                        Text("Рецепт не найден")
+                        Text(
+                            text = stringResource(R.string.recipe_not_found)
+                        )
                     }
                 }
             }
