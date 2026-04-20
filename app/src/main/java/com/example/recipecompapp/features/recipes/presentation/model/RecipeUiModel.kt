@@ -3,7 +3,7 @@ package com.example.recipecompapp.ui.recipes.model
 import android.os.Parcelable
 import androidx.compose.runtime.Immutable
 import com.example.recipecompapp.data.model.RecipeDto
-import com.example.recipecompapp.ui.Constants.ASSETS_URI_PREFIX
+import com.example.recipecompapp.core.Constants.ASSETS_URI_PREFIX
 import kotlinx.parcelize.Parcelize
 import kotlin.Int
 

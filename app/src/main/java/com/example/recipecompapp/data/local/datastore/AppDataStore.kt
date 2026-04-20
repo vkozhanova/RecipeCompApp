@@ -1,4 +1,4 @@
-package com.example.recipecompapp.data.util
+package com.example.recipecompapp.data.local.datastore
 
 import android.content.Context
 import androidx.datastore.core.DataStore

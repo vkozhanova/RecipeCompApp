@@ -1,4 +1,4 @@
-package com.example.recipecompapp.ui.navigation
+package com.example.recipecompapp.core.navigation
 
 sealed class Destination(val route: String) {
     object Categories : Destination("categories")

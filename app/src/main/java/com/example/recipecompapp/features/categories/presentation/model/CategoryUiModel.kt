@@ -1,8 +1,8 @@
-package com.example.recipecompapp.ui.categories.model
+package com.example.recipecompapp.features.categories.presentation.model
 
 import androidx.compose.runtime.Immutable
 import com.example.recipecompapp.data.model.CategoryDto
-import com.example.recipecompapp.ui.Constants.ASSETS_URI_PREFIX
+import com.example.recipecompapp.core.Constants.ASSETS_URI_PREFIX
 import kotlin.String
 
 @Immutable

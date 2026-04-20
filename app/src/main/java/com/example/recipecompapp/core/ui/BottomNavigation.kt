@@ -1,4 +1,4 @@
-package com.example.recipecompapp.ui.navigation
+package com.example.recipecompapp.core.ui
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
@@ -64,7 +64,7 @@ fun BottomNavigation(
             onClick = onFavoriteClick,
             buttonColor = MaterialTheme.colorScheme.error,
             textColor = Color.White,
-            shape = RoundedCornerShape(8.dp),
+            shape = androidx.compose.foundation.shape.RoundedCornerShape(8.dp),
             counter = favoriteCount,
             modifier = Modifier.weight(1f)
         )
@@ -78,7 +78,7 @@ fun NavigationButton(
     buttonColor: Color,
     textColor: Color,
     shape: RoundedCornerShape,
-    modifier: Modifier = Modifier,
+    modifier: Modifier = Modifier.Companion,
 ) {
     Button(
         onClick = onClick,
@@ -106,7 +106,7 @@ fun NavigationButtonIcon(
     textColor: Color,
     shape: RoundedCornerShape,
     counter: Int,
-    modifier: Modifier = Modifier,
+    modifier: Modifier = Modifier.Companion,
 ) {
     Button(
         onClick = onClick,
@@ -139,7 +139,7 @@ fun NavigationButtonIcon(
                 Spacer(modifier = Modifier.width(4.dp))
                 Badge(
                     containerColor = MaterialTheme.colorScheme.tertiary,
-                    modifier = Modifier,
+                    modifier = Modifier.Companion,
                 ) {
                     Text(
                         text = counter.toString(),

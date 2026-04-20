@@ -1,4 +1,4 @@
-package com.example.recipecompapp.ui.categories.components
+package com.example.recipecompapp.features.categories.ui
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
