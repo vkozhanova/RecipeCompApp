@@ -1,4 +1,4 @@
-package com.example.recipecompapp.ui.navigation
+package com.example.recipecompapp.core.ui
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
@@ -24,6 +24,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -49,7 +50,7 @@ fun BottomNavigation(
 
         ) {
         NavigationButton(
-            text = "Категории",
+            text = stringResource(R.string.categories),
             onClick = onCategoriesClick,
             buttonColor = MaterialTheme.colorScheme.tertiary,
             textColor = Color.White,
@@ -60,11 +61,11 @@ fun BottomNavigation(
         Spacer(modifier = Modifier.width(4.dp))
 
         NavigationButtonIcon(
-            text = "Избранное",
+            text = stringResource(R.string.favorites),
             onClick = onFavoriteClick,
             buttonColor = MaterialTheme.colorScheme.error,
             textColor = Color.White,
-            shape = RoundedCornerShape(8.dp),
+            shape = androidx.compose.foundation.shape.RoundedCornerShape(8.dp),
             counter = favoriteCount,
             modifier = Modifier.weight(1f)
         )

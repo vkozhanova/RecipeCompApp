@@ -1,4 +1,4 @@
-package com.example.recipecompapp.ui.navigation
+package com.example.recipecompapp.core.navigation
 
 import android.content.Context
 import android.content.Intent

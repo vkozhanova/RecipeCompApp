@@ -1,4 +1,4 @@
-package com.example.recipecompapp.ui
+package com.example.recipecompapp.core
 
 object Constants {
     const val ASSETS_URI_PREFIX = "file:///android_asset/"

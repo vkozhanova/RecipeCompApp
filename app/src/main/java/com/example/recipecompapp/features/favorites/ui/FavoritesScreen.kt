@@ -1,4 +1,4 @@
-package com.example.recipecompapp.ui.favorites
+package com.example.recipecompapp.features.favorites.ui
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -18,13 +18,14 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.foundation.lazy.items
 import androidx.compose.runtime.remember
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.recipecompapp.core.ui.screenheader.ScreenHeader
 import com.example.recipecompapp.ui.theme.RecipeCompAppTheme
 import com.example.recipecompapp.R
 import com.example.recipecompapp.data.repository.RecipesRepositoryStub
-import com.example.recipecompapp.data.util.FavoriteDataStoreManager
+import com.example.recipecompapp.data.local.datastore.FavoriteDataStoreManager
 import com.example.recipecompapp.ui.recipes.components.RecipeItem
 import com.example.recipecompapp.ui.recipes.model.toUiModel
 import kotlinx.coroutines.flow.map
@@ -94,7 +95,7 @@ fun FavoritesScreenPreview() {
     RecipeCompAppTheme {
         FavoritesScreen(
             repository = RecipesRepositoryStub,
-            favoritesManager = FavoriteDataStoreManager(androidx.compose.ui.platform.LocalContext.current),
+            favoritesManager = FavoriteDataStoreManager(LocalContext.current),
             onRecipeClick = {}
         )
     }

@@ -1,4 +1,4 @@
-package com.example.recipecompapp.data.util
+package com.example.recipecompapp.data.local.preferences
 
 import android.content.Context
 import androidx.core.content.edit

@@ -1,4 +1,4 @@
-package com.example.recipecompapp.ui.details
+package com.example.recipecompapp.features.details.ui
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
@@ -19,8 +19,8 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.recipecompapp.R
 import com.example.recipecompapp.core.ui.screenheader.ScreenHeader
-import com.example.recipecompapp.data.util.FavoriteDataStoreManager
-import com.example.recipecompapp.ui.navigation.ShareUtils
+import com.example.recipecompapp.data.local.datastore.FavoriteDataStoreManager
+import com.example.recipecompapp.core.navigation.ShareUtils
 import com.example.recipecompapp.ui.recipes.model.IngredientUiModel
 import com.example.recipecompapp.ui.recipes.model.RecipeUiModel
 import com.example.recipecompapp.ui.theme.RecipeCompAppTheme

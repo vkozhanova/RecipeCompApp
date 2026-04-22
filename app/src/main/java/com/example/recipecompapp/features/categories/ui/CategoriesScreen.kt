@@ -1,4 +1,4 @@
-package com.example.recipecompapp.ui.categories
+package com.example.recipecompapp.features.categories.ui
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -17,8 +17,7 @@ import androidx.compose.ui.unit.dp
 import com.example.recipecompapp.R
 import com.example.recipecompapp.core.ui.screenheader.ScreenHeader
 import com.example.recipecompapp.data.repository.RecipesRepositoryStub
-import com.example.recipecompapp.ui.categories.components.CategoryItem
-import com.example.recipecompapp.ui.categories.model.toUiModel
+import com.example.recipecompapp.features.categories.presentation.model.toUiModel
 import com.example.recipecompapp.ui.theme.RecipeCompAppTheme
 
 @Composable
