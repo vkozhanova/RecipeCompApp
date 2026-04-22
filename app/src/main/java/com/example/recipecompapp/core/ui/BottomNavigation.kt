@@ -24,6 +24,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -49,7 +50,7 @@ fun BottomNavigation(
 
         ) {
         NavigationButton(
-            text = "Категории",
+            text = stringResource(R.string.categories),
             onClick = onCategoriesClick,
             buttonColor = MaterialTheme.colorScheme.tertiary,
             textColor = Color.White,
@@ -60,7 +61,7 @@ fun BottomNavigation(
         Spacer(modifier = Modifier.width(4.dp))
 
         NavigationButtonIcon(
-            text = "Избранное",
+            text = stringResource(R.string.favorites),
             onClick = onFavoriteClick,
             buttonColor = MaterialTheme.colorScheme.error,
             textColor = Color.White,
@@ -78,7 +79,7 @@ fun NavigationButton(
     buttonColor: Color,
     textColor: Color,
     shape: RoundedCornerShape,
-    modifier: Modifier = Modifier.Companion,
+    modifier: Modifier = Modifier,
 ) {
     Button(
         onClick = onClick,
@@ -106,7 +107,7 @@ fun NavigationButtonIcon(
     textColor: Color,
     shape: RoundedCornerShape,
     counter: Int,
-    modifier: Modifier = Modifier.Companion,
+    modifier: Modifier = Modifier,
 ) {
     Button(
         onClick = onClick,
@@ -139,7 +140,7 @@ fun NavigationButtonIcon(
                 Spacer(modifier = Modifier.width(4.dp))
                 Badge(
                     containerColor = MaterialTheme.colorScheme.tertiary,
-                    modifier = Modifier.Companion,
+                    modifier = Modifier,
                 ) {
                     Text(
                         text = counter.toString(),

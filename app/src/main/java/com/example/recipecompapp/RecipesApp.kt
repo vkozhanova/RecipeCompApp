@@ -23,9 +23,9 @@ import com.example.recipecompapp.data.repository.RecipesRepositoryStub.getRecipe
 import com.example.recipecompapp.data.local.datastore.FavoriteDataStoreManager
 import com.example.recipecompapp.core.Constants.DEEP_LINK_BASE_URL
 import com.example.recipecompapp.core.Constants.DEEP_LINK_SCHEME
-import com.example.recipecompapp.features.categories.CategoriesScreen
-import com.example.recipecompapp.features.details.RecipeDetailsScreen
-import com.example.recipecompapp.features.favorites.FavoritesScreen
+import com.example.recipecompapp.features.categories.ui.CategoriesScreen
+import com.example.recipecompapp.features.details.ui.RecipeDetailsScreen
+import com.example.recipecompapp.features.favorites.ui.FavoritesScreen
 import com.example.recipecompapp.core.ui.BottomNavigation
 import com.example.recipecompapp.core.navigation.Destination
 import com.example.recipecompapp.ui.recipes.RecipesScreen
