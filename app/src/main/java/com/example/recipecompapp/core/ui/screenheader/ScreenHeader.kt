@@ -35,7 +35,7 @@ import com.example.recipecompapp.ui.theme.recipesAppTypography
 @Composable
 fun ScreenHeader(
     imageUrl: String? = null,
-    imageResId: Int,
+    imageResId: Int = R.drawable.bcg_categories,
     badgeText: String,
     showShareButton: Boolean = false,
     onSharedClick: () -> Unit = {},

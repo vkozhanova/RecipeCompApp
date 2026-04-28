@@ -7,4 +7,6 @@
     <string name="favorites">Избранное</string>
     <string name="no_favorites">Здесь пока нет рецептов</string>
     <string name="categories">Категории</string>
+    <string name="no_recipes_categories">В этой категории пока нет рецептов</string>
+    <string name="recipes">Рецепты</string>
 </resources>
