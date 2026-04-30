@@ -13,11 +13,13 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
+import com.example.recipecompapp.core.Constants
 import com.example.recipecompapp.data.repository.RecipesRepositoryStub
 import com.example.recipecompapp.data.repository.RecipesRepositoryStub.getRecipeById
 import com.example.recipecompapp.data.local.datastore.FavoriteDataStoreManager
@@ -28,7 +30,8 @@ import com.example.recipecompapp.features.details.ui.RecipeDetailsScreen
 import com.example.recipecompapp.features.favorites.ui.FavoritesScreen
 import com.example.recipecompapp.core.ui.BottomNavigation
 import com.example.recipecompapp.core.navigation.Destination
-import com.example.recipecompapp.ui.recipes.RecipesScreen
+import com.example.recipecompapp.features.recipes.presentation.RecipesViewModel
+import com.example.recipecompapp.features.recipes.ui.RecipesScreen
 import com.example.recipecompapp.ui.recipes.model.toUiModel
 import com.example.recipecompapp.ui.theme.RecipeCompAppTheme
 import kotlinx.coroutines.delay
@@ -77,18 +80,28 @@ fun RecipesApp(deepLinkIntent: Intent?) {
                 composable(Destination.Categories.route) {
                     CategoriesScreen(
                         onCategoryClick = { categoryId, title, imageUrl ->
-                            navController.navigate(Destination.Recipes.createRoute(categoryId))
+                            navController.navigate(
+                                Destination.Recipes.createRoute(
+                                    categoryId,
+                                    title,
+                                    imageUrl
+                                )
+                            )
                         },
                     )
                 }
 
                 composable(
                     route = Destination.Recipes.route,
-                    arguments = listOf(navArgument("categoryId") { type = NavType.IntType })
+                    arguments = listOf(
+                        navArgument(Constants.ARG_CATEGORY_ID) { type = NavType.IntType },
+                        navArgument(Constants.ARG_CATEGORY_TITLE) { type = NavType.StringType },
+                        navArgument(Constants.ARG_CATEGORY_IMAGE_URL) { type = NavType.StringType }
+                    )
                 ) { backStackEntry ->
-                    val categoryId = backStackEntry.arguments?.getInt("categoryId") ?: 0
+                    val viewModel: RecipesViewModel = viewModel()
                     RecipesScreen(
-                        categoryId = categoryId,
+                        viewModel = viewModel,
                         onRecipeClick = { recipeId, _ ->
                             Log.d("DEBUG", "Клик по рецепту $recipeId")
                             navController.navigate(Destination.RecipeDetails.createRoute(recipeId))
@@ -108,9 +121,10 @@ fun RecipesApp(deepLinkIntent: Intent?) {
 
                 composable(
                     route = Destination.RecipeDetails.route,
-                    arguments = listOf(navArgument("recipeId") { type = NavType.IntType })
+                    arguments = listOf(
+                        navArgument(Constants.ARG_RECIPE_ID) { type = NavType.IntType })
                 ) { backStackEntry ->
-                    val recipeId = backStackEntry.arguments?.getInt("recipeId") ?: 0
+                    val recipeId = backStackEntry.arguments?.getInt(Constants.ARG_RECIPE_ID) ?: 0
                     val recipe = getRecipeById(recipeId)?.toUiModel()
                     if (recipe != null) {
                         RecipeDetailsScreen(

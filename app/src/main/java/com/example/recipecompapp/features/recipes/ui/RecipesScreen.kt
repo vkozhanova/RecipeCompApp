@@ -1,4 +1,4 @@
-package com.example.recipecompapp.ui.recipes
+package com.example.recipecompapp.features.recipes.ui
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -14,95 +14,86 @@ import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.recipecompapp.R
 import com.example.recipecompapp.core.ui.screenheader.ScreenHeader
-import com.example.recipecompapp.data.repository.RecipesRepositoryStub
+import com.example.recipecompapp.features.recipes.presentation.RecipesViewModel
 import com.example.recipecompapp.ui.recipes.components.RecipeItem
 import com.example.recipecompapp.ui.recipes.model.RecipeUiModel
-import com.example.recipecompapp.ui.recipes.model.toUiModel
 import com.example.recipecompapp.ui.theme.RecipeCompAppTheme
 
 @Composable
 fun RecipesScreen(
-    categoryId: Int,
+    viewModel: RecipesViewModel,
     onRecipeClick: (Int, RecipeUiModel) -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    var categoryTitle by remember { mutableStateOf("") }
-    var recipes by remember { mutableStateOf<List<RecipeUiModel>>(emptyList()) }
-    var isLoading by remember { mutableStateOf(true) }
+    val uiState by viewModel.uiState.collectAsState()
 
-    LaunchedEffect(categoryId) {
-        val categories = RecipesRepositoryStub.getCategories()
-        categoryTitle = categories.find { it.id == categoryId }?.title ?: "Категория"
-        isLoading = true
-        try {
-            val recipesDto = RecipesRepositoryStub.getRecipesByCategoryId(categoryId)
-            recipes = recipesDto.map { it.toUiModel() }
-        } catch (e: Exception) {
-            recipes = emptyList()
-        } finally {
-            isLoading = false
-        }
-    }
     Column(
         modifier = modifier
             .fillMaxSize()
             .background(MaterialTheme.colorScheme.background)
     ) {
         ScreenHeader(
-            imageResId = R.drawable.bcg_categories,
-            badgeText = categoryTitle,
+            imageUrl = uiState.categoryImageUrl.takeIf { it.isNotEmpty() },
+            badgeText = uiState.categoryTitle.ifEmpty { stringResource(R.string.recipes) }
         )
 
-        when {
-            isLoading -> {
+        if (uiState.isLoading) {
+            Box(
+                modifier = Modifier.fillMaxSize(),
+                contentAlignment = Alignment.Center
+            ) {
+                CircularProgressIndicator()
+            }
+        } else {
+
+            uiState.error?.let { error ->
                 Box(
                     modifier = Modifier.fillMaxSize(),
                     contentAlignment = Alignment.Center
                 ) {
-                    CircularProgressIndicator()
+                    Text(text = error, color = MaterialTheme.colorScheme.error)
                 }
-            }
-
-            recipes.isEmpty() -> {
-                Box(
-                    modifier = Modifier.fillMaxSize(),
-                    contentAlignment = Alignment.Center
-                ) {
-                    Text(
-                        text = "В этой категории пока нет рецептов",
-                        style = MaterialTheme.typography.bodyLarge,
-                        textAlign = TextAlign.Center,
-                        modifier = Modifier.padding(16.dp)
-                    )
-                }
-            }
-
-            else -> {
-                LazyColumn(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .padding(vertical = 16.dp),
-                    verticalArrangement = Arrangement.spacedBy(8.dp),
-                    contentPadding = PaddingValues(horizontal = 16.dp)
-                ) {
-                    items(recipes, key = { it.id }) { recipe ->
-                        RecipeItem(
-                            recipe = recipe,
-                            onClick = { onRecipeClick(recipe.id, recipe) },
-                            modifier = Modifier.fillMaxWidth()
+            } ?: run {
+                if (uiState.recipes.isEmpty()) {
+                    Box(
+                        modifier = Modifier.fillMaxSize(),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Text(
+                            text = stringResource(R.string.no_recipes_categories),
+                            style = MaterialTheme.typography.bodyLarge,
+                            textAlign = TextAlign.Center,
+                            modifier = Modifier.padding(16.dp)
                         )
+                    }
+                } else {
+                    LazyColumn(
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .padding(vertical = 16.dp),
+                        verticalArrangement = Arrangement.spacedBy(8.dp),
+                        contentPadding = PaddingValues(horizontal = 16.dp)
+                    ) {
+                        items(
+                            items = uiState.recipes,
+                            key = { it.id }
+                        ) { recipe ->
+                            RecipeItem(
+                                recipe = recipe,
+                                onClick = { onRecipeClick(recipe.id, recipe) },
+                                modifier = Modifier.fillMaxWidth()
+                            )
+                        }
                     }
                 }
             }
