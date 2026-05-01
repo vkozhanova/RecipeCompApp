@@ -17,35 +17,23 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.foundation.lazy.items
-import androidx.compose.runtime.remember
-import androidx.compose.ui.platform.LocalContext
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.recipecompapp.core.ui.screenheader.ScreenHeader
 import com.example.recipecompapp.ui.theme.RecipeCompAppTheme
 import com.example.recipecompapp.R
-import com.example.recipecompapp.data.repository.RecipesRepositoryStub
-import com.example.recipecompapp.data.local.datastore.FavoriteDataStoreManager
+import com.example.recipecompapp.features.favorites.presentation.FavoritesViewModel
 import com.example.recipecompapp.ui.recipes.components.RecipeItem
-import com.example.recipecompapp.ui.recipes.model.toUiModel
-import kotlinx.coroutines.flow.map
 
 @Composable
 fun FavoritesScreen(
-    repository: RecipesRepositoryStub,
-    favoritesManager: FavoriteDataStoreManager,
     onRecipeClick: (Int) -> Unit,
+    viewModel: FavoritesViewModel = viewModel(),
     modifier: Modifier = Modifier
 ) {
-    val favoriteRecipesFlow = remember(favoritesManager, repository) {
-        favoritesManager.getFavoriteIdsFlow().map { ids ->
-            ids.mapNotNull { id ->
-                repository.getRecipeById(id.toIntOrNull() ?: -1)?.toUiModel()
-            }
-        }
-    }
-
-    val favoriteRecipes by favoriteRecipesFlow.collectAsState(initial = emptyList())
+    val uiState by viewModel.uiState.collectAsState()
 
     Column(
         modifier = modifier
@@ -57,32 +45,54 @@ fun FavoritesScreen(
             badgeText = stringResource(R.string.favorites),
         )
 
-        if (favoriteRecipes.isEmpty()) {
+        if (uiState.isLoading) {
             Box(
                 modifier = Modifier.fillMaxSize(),
                 contentAlignment = Alignment.Center
             ) {
-                Text(
-                    text = stringResource(R.string.no_favorites),
-                    style = MaterialTheme.typography.bodyLarge,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant
-                )
+                CircularProgressIndicator()
             }
         } else {
-            LazyColumn(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(16.dp),
-                verticalArrangement = Arrangement.spacedBy(12.dp)
-            ) {
-                items(
-                    items = favoriteRecipes,
-                    key = { recipe -> recipe.id }
-                ) { recipe ->
-                    RecipeItem(
-                        recipe = recipe,
-                        onClick = { onRecipeClick(recipe.id) }
+            uiState.error?.let { error ->
+                Box(
+                    modifier = Modifier.fillMaxSize(),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Text(
+                        text = error,
+                        color = MaterialTheme.colorScheme.error,
+                        modifier = Modifier.padding(16.dp)
                     )
+                }
+            } ?: run {
+                if (uiState.isEmpty) {
+                    Box(
+                        modifier = Modifier.fillMaxSize(),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Text(
+                            text = stringResource(R.string.no_favorites),
+                            style = MaterialTheme.typography.bodyLarge,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
+                    }
+                } else {
+                    LazyColumn(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(16.dp),
+                        verticalArrangement = Arrangement.spacedBy(12.dp)
+                    ) {
+                        items(
+                            items = uiState.recipes,
+                            key = { it.id }
+                        ) { recipe ->
+                            RecipeItem(
+                                recipe = recipe,
+                                onClick = { onRecipeClick(recipe.id) }
+                            )
+                        }
+                    }
                 }
             }
         }
@@ -93,10 +103,6 @@ fun FavoritesScreen(
 @Composable
 fun FavoritesScreenPreview() {
     RecipeCompAppTheme {
-        FavoritesScreen(
-            repository = RecipesRepositoryStub,
-            favoritesManager = FavoriteDataStoreManager(LocalContext.current),
-            onRecipeClick = {}
-        )
+        FavoritesScreen(onRecipeClick = {})
     }
 }
