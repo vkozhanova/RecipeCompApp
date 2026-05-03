@@ -1,6 +1,6 @@
 package com.example.recipecompapp.features.favorites.presentation.model
 
-import com.example.recipecompapp.ui.recipes.model.RecipeUiModel
+import com.example.recipecompapp.features.recipes.presentation.model.RecipeUiModel
 
 data class FavoritesUiState(
     val  recipes: List<RecipeUiModel> = emptyList(),

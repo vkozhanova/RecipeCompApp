@@ -2,7 +2,7 @@ package com.example.recipecompapp.features.details.presentation.model
 
 
 import com.example.recipecompapp.ui.recipes.model.IngredientUiModel
-import com.example.recipecompapp.ui.recipes.model.RecipeUiModel
+import com.example.recipecompapp.features.recipes.presentation.model.RecipeUiModel
 
 const val DEFAULT_SERVINGS = 2
 

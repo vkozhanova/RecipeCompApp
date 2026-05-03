@@ -6,7 +6,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.recipecompapp.data.repository.RecipesRepositoryStub
 import com.example.recipecompapp.features.recipes.presentation.model.RecipesUiState
-import com.example.recipecompapp.ui.recipes.model.toUiModel
+import com.example.recipecompapp.features.recipes.presentation.model.toUiModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow

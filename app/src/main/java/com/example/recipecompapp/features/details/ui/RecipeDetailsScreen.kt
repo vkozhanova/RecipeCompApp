@@ -24,7 +24,7 @@ import com.example.recipecompapp.core.ui.screenheader.ScreenHeader
 import com.example.recipecompapp.core.navigation.ShareUtils
 import com.example.recipecompapp.features.details.presentation.RecipeDetailsViewModel
 import com.example.recipecompapp.ui.recipes.model.IngredientUiModel
-import com.example.recipecompapp.ui.recipes.model.RecipeUiModel
+import com.example.recipecompapp.features.recipes.presentation.model.RecipeUiModel
 import com.example.recipecompapp.ui.theme.RecipeCompAppTheme
 import com.example.recipecompapp.ui.theme.recipesAppTypography
 import kotlin.math.roundToInt

@@ -7,7 +7,7 @@ import com.example.recipecompapp.R
 import com.example.recipecompapp.data.local.datastore.FavoriteDataStoreManager
 import com.example.recipecompapp.data.repository.RecipesRepositoryStub
 import com.example.recipecompapp.features.favorites.presentation.model.FavoritesUiState
-import com.example.recipecompapp.ui.recipes.model.toUiModel
+import com.example.recipecompapp.features.recipes.presentation.model.toUiModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -24,7 +24,7 @@ class FavoritesViewModel(
     private val _uiState = MutableStateFlow(FavoritesUiState(isLoading = true))
     val uiState: StateFlow<FavoritesUiState> = _uiState.asStateFlow()
 
-    val context = getApplication<Application>()
+    private val context = getApplication<Application>()
 
     init {
         observeFavorites()

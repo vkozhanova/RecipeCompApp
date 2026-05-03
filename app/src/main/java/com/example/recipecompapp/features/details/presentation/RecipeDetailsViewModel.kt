@@ -8,7 +8,7 @@ import com.example.recipecompapp.R
 import com.example.recipecompapp.data.local.datastore.FavoriteDataStoreManager
 import com.example.recipecompapp.data.repository.RecipesRepositoryStub
 import com.example.recipecompapp.features.details.presentation.model.RecipeDetailsUiState
-import com.example.recipecompapp.ui.recipes.model.toUiModel
+import com.example.recipecompapp.features.recipes.presentation.model.toUiModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -27,7 +27,7 @@ class RecipeDetailsViewModel(
     private val _uiState = MutableStateFlow(RecipeDetailsUiState(isLoading = true))
     val uiState: StateFlow<RecipeDetailsUiState> = _uiState.asStateFlow()
 
-    val context = getApplication<Application>()
+    private val context = getApplication<Application>()
 
     init{
       loadRecipe()
