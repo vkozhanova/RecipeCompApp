@@ -1,7 +1,5 @@
 package com.example.recipecompapp.features.recipes.presentation.model
 
-import com.example.recipecompapp.ui.recipes.model.RecipeUiModel
-
 data class RecipesUiState(
     val recipes: List<RecipeUiModel> = emptyList(),
     val categoryTitle: String = "",

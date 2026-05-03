@@ -28,7 +28,7 @@ import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import com.example.recipecompapp.R
-import com.example.recipecompapp.ui.recipes.model.RecipeUiModel
+import com.example.recipecompapp.features.recipes.presentation.model.RecipeUiModel
 import com.example.recipecompapp.ui.theme.recipesAppTypography
 import kotlin.Int
 

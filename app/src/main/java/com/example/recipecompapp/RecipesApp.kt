@@ -5,13 +5,11 @@ import android.net.Uri
 import android.util.Log
 import  androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavType
@@ -20,8 +18,6 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.example.recipecompapp.core.Constants
-import com.example.recipecompapp.data.repository.RecipesRepositoryStub
-import com.example.recipecompapp.data.repository.RecipesRepositoryStub.getRecipeById
 import com.example.recipecompapp.data.local.datastore.FavoriteDataStoreManager
 import com.example.recipecompapp.core.Constants.DEEP_LINK_BASE_URL
 import com.example.recipecompapp.core.Constants.DEEP_LINK_SCHEME
@@ -30,9 +26,9 @@ import com.example.recipecompapp.features.details.ui.RecipeDetailsScreen
 import com.example.recipecompapp.features.favorites.ui.FavoritesScreen
 import com.example.recipecompapp.core.ui.BottomNavigation
 import com.example.recipecompapp.core.navigation.Destination
+import com.example.recipecompapp.features.details.presentation.RecipeDetailsViewModel
 import com.example.recipecompapp.features.recipes.presentation.RecipesViewModel
 import com.example.recipecompapp.features.recipes.ui.RecipesScreen
-import com.example.recipecompapp.ui.recipes.model.toUiModel
 import com.example.recipecompapp.ui.theme.RecipeCompAppTheme
 import kotlinx.coroutines.delay
 
@@ -111,8 +107,6 @@ fun RecipesApp(deepLinkIntent: Intent?) {
 
                 composable(Destination.Favorites.route) {
                     FavoritesScreen(
-                        repository = RecipesRepositoryStub,
-                        favoritesManager = dataStoreManager,
                         onRecipeClick = { recipeId ->
                             navController.navigate(Destination.RecipeDetails.createRoute(recipeId))
                         }
@@ -124,18 +118,11 @@ fun RecipesApp(deepLinkIntent: Intent?) {
                     arguments = listOf(
                         navArgument(Constants.ARG_RECIPE_ID) { type = NavType.IntType })
                 ) { backStackEntry ->
-                    val recipeId = backStackEntry.arguments?.getInt(Constants.ARG_RECIPE_ID) ?: 0
-                    val recipe = getRecipeById(recipeId)?.toUiModel()
-                    if (recipe != null) {
-                        RecipeDetailsScreen(
-                            recipe = recipe,
-                            onNavigateBack = { navController.popBackStack() }
-                        )
-                    } else {
-                        Text(
-                            text = stringResource(R.string.recipe_not_found)
-                        )
-                    }
+                    val viewModel: RecipeDetailsViewModel = viewModel(backStackEntry)
+                    RecipeDetailsScreen(
+                        viewModel = viewModel,
+                        onNavigateBack = { navController.popBackStack() }
+                    )
                 }
             }
         }
