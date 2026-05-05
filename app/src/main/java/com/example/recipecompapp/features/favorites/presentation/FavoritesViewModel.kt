@@ -1,7 +1,8 @@
 package com.example.recipecompapp.features.favorites.presentation
 
-import android.app.Application
-import androidx.lifecycle.AndroidViewModel
+import android.content.res.Resources
+import androidx.lifecycle.SavedStateHandle
+import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.recipecompapp.R
 import com.example.recipecompapp.data.local.datastore.FavoriteDataStoreManager
@@ -17,14 +18,13 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 class FavoritesViewModel(
-    application: Application,
-) : AndroidViewModel(application) {
-    private val dataStoreManager = FavoriteDataStoreManager(application)
-    private val repository = RecipesRepositoryStub
+    private val savedStateHandle: SavedStateHandle,
+    private val resources: Resources,
+    private val repository: RecipesRepositoryStub,
+    private val dataStoreManager: FavoriteDataStoreManager,
+) : ViewModel() {
     private val _uiState = MutableStateFlow(FavoritesUiState(isLoading = true))
     val uiState: StateFlow<FavoritesUiState> = _uiState.asStateFlow()
-
-    private val context = getApplication<Application>()
 
     init {
         observeFavorites()
@@ -37,7 +37,7 @@ class FavoritesViewModel(
                     _uiState.update {
                         it.copy(
                             isLoading = false,
-                            error = e.message ?: context.getString(R.string.favorites_error)
+                            error = e.message ?: resources.getString(R.string.favorites_error)
                         )
                     }
                 }
@@ -55,6 +55,12 @@ class FavoritesViewModel(
                         )
                     }
                 }
+        }
+    }
+
+    fun toggleFavorite(recipeId: Int) {
+        viewModelScope.launch {
+            dataStoreManager.toggleFavorite(recipeId)
         }
     }
 }

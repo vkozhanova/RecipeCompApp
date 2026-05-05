@@ -9,4 +9,5 @@ object Constants {
     const val ARG_CATEGORY_TITLE = "categoryTitle"
     const val ARG_CATEGORY_IMAGE_URL = "categoryImageUrl"
     const val ARG_RECIPE_ID = "recipeId"
+    const val KEY_SERVINGS = "servings"
 }

@@ -1,6 +1,5 @@
 package com.example.recipecompapp.features.details.presentation.model
 
-
 import com.example.recipecompapp.ui.recipes.model.IngredientUiModel
 import com.example.recipecompapp.features.recipes.presentation.model.RecipeUiModel
 
@@ -8,16 +7,16 @@ const val DEFAULT_SERVINGS = 2
 
 data class RecipeDetailsUiState(
     val recipe: RecipeUiModel? = null,
-    val servings: Int = DEFAULT_SERVINGS,
+    val currentPortions: Int = DEFAULT_SERVINGS,
+    val scaledIngredients: List<IngredientUiModel> = emptyList(),
     val isLoading: Boolean = false,
     val isFavorite: Boolean = false,
     val error: String? = null
 ) {
-    val scaledIngredients: List<IngredientUiModel>
-        get() {
-            val stringRecipe = recipe ?: return emptyList()
-        val multiplier = servings.toDouble() / DEFAULT_SERVINGS
-       return stringRecipe.ingredients.map { ingredient ->
+    fun recalcIngredients(): List<IngredientUiModel> {
+        val stringRecipe = recipe ?: return emptyList()
+        val multiplier = currentPortions.toDouble() / DEFAULT_SERVINGS
+        return stringRecipe.ingredients.map { ingredient ->
             val parts = ingredient.amount.split(' ', limit = 2)
             val number = parts.firstOrNull()?.toDoubleOrNull() ?: 0.0
             val unit = if (parts.size > 1) parts[1] else ""
@@ -31,6 +30,7 @@ data class RecipeDetailsUiState(
             ingredient.copy(amount = newAmount)
         }
     }
+
 
     companion object {
         private fun formatNumber(value: Double): String {
