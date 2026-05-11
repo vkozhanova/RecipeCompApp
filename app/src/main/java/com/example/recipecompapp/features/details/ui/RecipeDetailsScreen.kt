@@ -74,7 +74,7 @@ fun RecipeDetailsScreen(
                     } else {
                         RecipeDetailsContent(
                             recipe = recipe,
-                            servings = uiState.servings,
+                            servings = uiState.currentPortions,
                             scaledIngredients = uiState.scaledIngredients,
                             isFavorite = uiState.isFavorite,
                             onServingsChange = { viewModel.updatePortions(it) },

@@ -1,5 +1,7 @@
 package com.example.recipecompapp
 
+import android.annotation.SuppressLint
+import android.app.Application
 import android.content.Intent
 import android.net.Uri
 import android.util.Log
@@ -12,6 +14,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.NavBackStackEntry
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -26,7 +29,9 @@ import com.example.recipecompapp.features.details.ui.RecipeDetailsScreen
 import com.example.recipecompapp.features.favorites.ui.FavoritesScreen
 import com.example.recipecompapp.core.ui.BottomNavigation
 import com.example.recipecompapp.core.navigation.Destination
+import com.example.recipecompapp.data.repository.RecipesRepositoryStub
 import com.example.recipecompapp.features.details.presentation.RecipeDetailsViewModel
+import com.example.recipecompapp.features.favorites.presentation.FavoritesViewModel
 import com.example.recipecompapp.features.recipes.presentation.RecipesViewModel
 import com.example.recipecompapp.features.recipes.ui.RecipesScreen
 import com.example.recipecompapp.ui.theme.RecipeCompAppTheme
@@ -37,8 +42,10 @@ fun RecipesApp(deepLinkIntent: Intent?) {
     RecipeCompAppTheme {
         val navController = rememberNavController()
         val context = LocalContext.current
+        val application = context.applicationContext as Application
         val dataStoreManager = remember { FavoriteDataStoreManager(context) }
         val favoriteCountFlow = remember { dataStoreManager.getFavoriteCountFlow() }
+        val repository = remember { RecipesRepositoryStub }
 
         LaunchedEffect(deepLinkIntent) {
             deepLinkIntent?.data?.let { uri ->
@@ -105,11 +112,17 @@ fun RecipesApp(deepLinkIntent: Intent?) {
                     )
                 }
 
-                composable(Destination.Favorites.route) {
+                composable(Destination.Favorites.route) { backStackEntry ->
+                    val viewModel: FavoritesViewModel = favoritesViewModel(
+                        backStackEntry,
+                        repository,
+                        dataStoreManager
+                    )
                     FavoritesScreen(
                         onRecipeClick = { recipeId ->
                             navController.navigate(Destination.RecipeDetails.createRoute(recipeId))
-                        }
+                        },
+                        viewModel = viewModel
                     )
                 }
 
@@ -118,7 +131,11 @@ fun RecipesApp(deepLinkIntent: Intent?) {
                     arguments = listOf(
                         navArgument(Constants.ARG_RECIPE_ID) { type = NavType.IntType })
                 ) { backStackEntry ->
-                    val viewModel: RecipeDetailsViewModel = viewModel(backStackEntry)
+                    val viewModel: RecipeDetailsViewModel = recipeDetailsViewModel(
+                        backStackEntry,
+                        repository,
+                        dataStoreManager
+                    )
                     RecipeDetailsScreen(
                         viewModel = viewModel,
                         onNavigateBack = { navController.popBackStack() }
@@ -147,6 +164,42 @@ private fun parseRecipeIdFromUri(uri: Uri): Int? {
 }
 
 fun createRecipeDeepLink(recipeId: Int): String = "$DEEP_LINK_BASE_URL/recipe/$recipeId"
+
+@SuppressLint("LocalContextResourcesRead")
+@Composable
+private fun recipeDetailsViewModel(
+    backStackEntry: NavBackStackEntry,
+    repository: RecipesRepositoryStub,
+    dataStoreManager: FavoriteDataStoreManager
+): RecipeDetailsViewModel {
+    val context = LocalContext.current
+    return viewModel(backStackEntry) {
+        RecipeDetailsViewModel(
+            savedStateHandle = backStackEntry.savedStateHandle,
+            resources = context.resources,
+            repository = repository,
+            dataStoreManager = dataStoreManager
+        )
+    }
+}
+
+@SuppressLint("LocalContextResourcesRead")
+@Composable
+private fun favoritesViewModel(
+    backStackEntry: NavBackStackEntry,
+    repository: RecipesRepositoryStub,
+    dataStoreManager: FavoriteDataStoreManager
+): FavoritesViewModel {
+    val context = LocalContext.current
+    return viewModel(backStackEntry) {
+        FavoritesViewModel(
+            savedStateHandle = backStackEntry.savedStateHandle,
+            resources = context.resources,
+            repository = repository,
+            dataStoreManager = dataStoreManager
+        )
+    }
+}
 
 @Preview
 @Composable
