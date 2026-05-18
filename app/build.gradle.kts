@@ -49,8 +49,8 @@ android {
 }
 
 dependencies {
+    implementation(libs.okhttp)
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-json-jvm:1.9.0")
-
     implementation(libs.androidx.compose.foundation)
     implementation(libs.androidx.compose.runtime)
     implementation(libs.androidx.lifecycle.viewmodel.ktx)
