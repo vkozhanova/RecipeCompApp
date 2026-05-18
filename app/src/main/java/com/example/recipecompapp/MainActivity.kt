@@ -9,95 +9,70 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.core.view.WindowCompat
+import androidx.lifecycle.lifecycleScope
+import com.example.recipecompapp.core.network.NetworkConfig.BASE_URL
+import com.example.recipecompapp.core.network.api.RecipesApiService
 import com.example.recipecompapp.data.model.CategoryDto
-import com.example.recipecompapp.data.model.RecipeDto
+import com.jakewharton.retrofit2.converter.kotlinx.serialization.asConverterFactory
+import kotlinx.coroutines.launch
 import kotlinx.serialization.json.Json
-import okhttp3.OkHttpClient
-import okhttp3.Request
-import java.util.concurrent.ExecutorService
-import java.util.concurrent.Executors
-import java.util.concurrent.TimeUnit
-import kotlin.concurrent.thread
+import okhttp3.MediaType.Companion.toMediaType
+import retrofit2.Retrofit
 
 class MainActivity : ComponentActivity() {
     private var deepLinkIntent by mutableStateOf(null as Intent?)
-    private val okHttpClient = OkHttpClient.Builder()
-        .connectTimeout(5, TimeUnit.SECONDS)
-        .readTimeout(5, TimeUnit.SECONDS)
+    private val json = Json {
+        ignoreUnknownKeys = true
+        coerceInputValues = true
+    }
+    private val retrofit = Retrofit.Builder()
+        .baseUrl(BASE_URL)
+        .addConverterFactory(json.asConverterFactory("application/json".toMediaType()))
         .build()
-    private lateinit var threadPool: ExecutorService
-    private val jsonParser = Json { ignoreUnknownKeys = true }
+    private val apiService = retrofit.create(RecipesApiService::class.java)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        threadPool = Executors.newFixedThreadPool(10)
         WindowCompat.setDecorFitsSystemWindows(window, false)
 
         intent?.data?.let { _ -> deepLinkIntent = intent }
 
-        thread {
+        lifecycleScope.launch {
             loadCategories()
         }
+
         setContent {
             RecipesApp(deepLinkIntent = deepLinkIntent)
         }
     }
 
-    private fun loadCategories() {
+    private suspend fun loadCategories() {
         val threadName = Thread.currentThread().name
-        val request = Request.Builder()
-            .url("https://recipes.androidsprint.ru/api/category")
-            .build()
-
         try {
-            okHttpClient.newCall(request).execute().use { response ->
-                val body = response.body?.string()
-                if (response.isSuccessful && body != null) {
-                    val categories = jsonParser.decodeFromString<List<CategoryDto>>(body)
-                    Log.i(
-                        "!!!",
-                        "Количество полученных категорий: ${categories.size} на потоке $threadName"
-                    )
-                    Log.i("!!!", "Body: $body")
+            val categories = apiService.getCategories()
+            Log.i(
+                "!!!",
+                "Количество полученных категорий: ${categories.size} на потоке $threadName"
+            )
 
-                    categories.forEach { category ->
-                        threadPool.execute {
-                            loadRecipesForCategory(category)
-                        }
-                    }
-                } else {
-                    Log.e("!!!", "Ошибка загрузки категорий, код: ${response.code}, тело:$body")
+            categories.forEach { category ->
+                lifecycleScope.launch {
+                    loadRecipesForCategory(category)
                 }
             }
         } catch (e: Exception) {
-            Log.e("!!!", "Исключение при загурзке категорий, ${e.message}", e)
+            Log.e("!!!", "Исключение при загрузке категорий, ${e.message}", e)
         }
     }
 
-    private fun loadRecipesForCategory(category: CategoryDto) {
+    private suspend fun loadRecipesForCategory(category: CategoryDto) {
         val threadName = Thread.currentThread().name
-        val request = Request.Builder()
-            .url("https://recipes.androidsprint.ru/api/category/${category.id}/recipes")
-            .build()
-
         try {
-            okHttpClient.newCall(request).execute().use { response ->
-                val body = response.body?.string()
-
-                if (response.isSuccessful && body != null) {
-                    val recipes = jsonParser.decodeFromString<List<RecipeDto>>(body)
-                    Log.i(
-                        "!!!",
-                        "Категория ${category.title}: получено рецептов: ${recipes.size} на потоке $threadName"
-                    )
-                    Log.i("!!!", "Body: $body")
-                } else {
-                    Log.e(
-                        "!!!",
-                        "Ошибка при загрузке  рецептов для ${category.title}. Код: ${response.code}, тело: $body"
-                    )
-                }
-            }
+            val recipes = apiService.getRecipesByCategory(category.id)
+            Log.i(
+                "!!!",
+                "Категория ${category.title}: получено рецептов: ${recipes.size} на потоке $threadName"
+            )
         } catch (e: Exception) {
             Log.e(
                 "!!!",
@@ -110,12 +85,6 @@ class MainActivity : ComponentActivity() {
     override fun onNewIntent(intent: Intent) {
         super.onNewIntent(intent)
         intent.data?.let { _ -> deepLinkIntent = intent }
-
         setIntent(intent)
-    }
-
-    override fun onDestroy() {
-        super.onDestroy()
-        threadPool.shutdown()
     }
 }
