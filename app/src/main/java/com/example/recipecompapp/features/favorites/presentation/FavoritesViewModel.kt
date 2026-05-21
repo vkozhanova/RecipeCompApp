@@ -1,12 +1,13 @@
 package com.example.recipecompapp.features.favorites.presentation
 
 import android.content.res.Resources
+import android.util.Log
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.recipecompapp.R
 import com.example.recipecompapp.data.local.datastore.FavoriteDataStoreManager
-import com.example.recipecompapp.data.repository.RecipesRepositoryStub
+import com.example.recipecompapp.data.repository.RecipesRepository
 import com.example.recipecompapp.features.favorites.presentation.model.FavoritesUiState
 import com.example.recipecompapp.features.recipes.presentation.model.toUiModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -20,7 +21,7 @@ import kotlinx.coroutines.launch
 class FavoritesViewModel(
     private val savedStateHandle: SavedStateHandle,
     private val resources: Resources,
-    private val repository: RecipesRepositoryStub,
+    private val repository: RecipesRepository,
     private val dataStoreManager: FavoriteDataStoreManager,
 ) : ViewModel() {
     private val _uiState = MutableStateFlow(FavoritesUiState(isLoading = true))
@@ -43,7 +44,12 @@ class FavoritesViewModel(
                 }
                 .map { ids ->
                     ids.mapNotNull { id ->
-                        repository.getRecipeById(id.toIntOrNull() ?: -1)?.toUiModel()
+                        try {
+                            repository.getRecipe(id.toIntOrNull() ?: -1).toUiModel()
+                        } catch (e: Exception) {
+                            Log.e("!!!", "Ошибка загрузки рецепта $id", e)
+                            null
+                        }
                     }
                 }
                 .collect { recipes ->

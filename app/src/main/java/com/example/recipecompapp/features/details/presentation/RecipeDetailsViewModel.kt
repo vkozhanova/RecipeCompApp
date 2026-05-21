@@ -1,13 +1,14 @@
 package com.example.recipecompapp.features.details.presentation
 
+import android.app.Application
 import android.content.res.Resources
+import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.SavedStateHandle
-import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.recipecompapp.R
 import com.example.recipecompapp.core.Constants.KEY_SERVINGS
 import com.example.recipecompapp.data.local.datastore.FavoriteDataStoreManager
-import com.example.recipecompapp.data.repository.RecipesRepositoryStub
+import com.example.recipecompapp.data.repository.RecipesRepository
 import com.example.recipecompapp.features.details.presentation.model.DEFAULT_SERVINGS
 import com.example.recipecompapp.features.details.presentation.model.RecipeDetailsUiState
 import com.example.recipecompapp.features.recipes.presentation.model.toUiModel
@@ -19,11 +20,12 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 class RecipeDetailsViewModel(
+    application: Application,
     private val savedStateHandle: SavedStateHandle,
     private val resources: Resources,
-    private val  repository: RecipesRepositoryStub,
+    private val  repository: RecipesRepository,
     private val dataStoreManager: FavoriteDataStoreManager,
-) : ViewModel() {
+) : AndroidViewModel(application) {
     private val recipeId = savedStateHandle["recipeId"] ?: -1
     private val _uiState = MutableStateFlow(RecipeDetailsUiState(isLoading = true))
     val uiState: StateFlow<RecipeDetailsUiState> = _uiState.asStateFlow()
@@ -37,8 +39,7 @@ class RecipeDetailsViewModel(
         viewModelScope.launch {
             _uiState.update { it.copy(isLoading = true, error = null) }
             try {
-                val recipeDto = repository.getRecipeById(recipeId)
-                if (recipeDto != null) {
+                val recipeDto = repository.getRecipe(recipeId)
                     val recipeUi = recipeDto.toUiModel()
                     val restoredPortions =
                         savedStateHandle.get<Int>(KEY_SERVINGS) ?: DEFAULT_SERVINGS
@@ -52,14 +53,6 @@ class RecipeDetailsViewModel(
                     )
                     val scaled = newSate.recalcIngredients()
                     _uiState.update { newSate.copy(scaledIngredients = scaled) }
-                } else {
-                    _uiState.update {
-                        it.copy(
-                            error = resources.getString(R.string.recipe_not_found),
-                            isLoading = false
-                        )
-                    }
-                }
             } catch (e: Exception) {
                 _uiState.update {
                     it.copy(
