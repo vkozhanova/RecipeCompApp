@@ -29,7 +29,11 @@ import com.example.recipecompapp.features.details.ui.RecipeDetailsScreen
 import com.example.recipecompapp.features.favorites.ui.FavoritesScreen
 import com.example.recipecompapp.core.ui.BottomNavigation
 import com.example.recipecompapp.core.navigation.Destination
-import com.example.recipecompapp.data.repository.RecipesRepositoryStub
+import com.example.recipecompapp.core.network.api.RecipesApiService
+import com.example.recipecompapp.data.model.CategoryDto
+import com.example.recipecompapp.data.model.RecipeDto
+import com.example.recipecompapp.data.repository.RecipesRepository
+import com.example.recipecompapp.data.repository.RecipesRepositoryImpl
 import com.example.recipecompapp.features.details.presentation.RecipeDetailsViewModel
 import com.example.recipecompapp.features.favorites.presentation.FavoritesViewModel
 import com.example.recipecompapp.features.recipes.presentation.RecipesViewModel
@@ -38,14 +42,19 @@ import com.example.recipecompapp.ui.theme.RecipeCompAppTheme
 import kotlinx.coroutines.delay
 
 @Composable
-fun RecipesApp(deepLinkIntent: Intent?) {
+fun RecipesApp(
+    apiService: RecipesApiService,
+    deepLinkIntent: Intent?
+) {
     RecipeCompAppTheme {
         val navController = rememberNavController()
         val context = LocalContext.current
         val application = context.applicationContext as Application
         val dataStoreManager = remember { FavoriteDataStoreManager(context) }
         val favoriteCountFlow = remember { dataStoreManager.getFavoriteCountFlow() }
-        val repository = remember { RecipesRepositoryStub }
+        val repository: RecipesRepository = remember(apiService) {
+            RecipesRepositoryImpl(apiService)
+        }
 
         LaunchedEffect(deepLinkIntent) {
             deepLinkIntent?.data?.let { uri ->
@@ -82,6 +91,7 @@ fun RecipesApp(deepLinkIntent: Intent?) {
 
                 composable(Destination.Categories.route) {
                     CategoriesScreen(
+                        repository = repository,
                         onCategoryClick = { categoryId, title, imageUrl ->
                             navController.navigate(
                                 Destination.Recipes.createRoute(
@@ -102,7 +112,9 @@ fun RecipesApp(deepLinkIntent: Intent?) {
                         navArgument(Constants.ARG_CATEGORY_IMAGE_URL) { type = NavType.StringType }
                     )
                 ) { backStackEntry ->
-                    val viewModel: RecipesViewModel = viewModel()
+                    val viewModel: RecipesViewModel = remember(backStackEntry) {
+                        RecipesViewModel(backStackEntry.savedStateHandle, repository)
+                    }
                     RecipesScreen(
                         viewModel = viewModel,
                         onRecipeClick = { recipeId, _ ->
@@ -169,12 +181,14 @@ fun createRecipeDeepLink(recipeId: Int): String = "$DEEP_LINK_BASE_URL/recipe/$r
 @Composable
 private fun recipeDetailsViewModel(
     backStackEntry: NavBackStackEntry,
-    repository: RecipesRepositoryStub,
+    repository: RecipesRepository,
     dataStoreManager: FavoriteDataStoreManager
 ): RecipeDetailsViewModel {
     val context = LocalContext.current
+    val application = context.applicationContext as Application   // ← добавить
     return viewModel(backStackEntry) {
         RecipeDetailsViewModel(
+            application = application,
             savedStateHandle = backStackEntry.savedStateHandle,
             resources = context.resources,
             repository = repository,
@@ -187,7 +201,7 @@ private fun recipeDetailsViewModel(
 @Composable
 private fun favoritesViewModel(
     backStackEntry: NavBackStackEntry,
-    repository: RecipesRepositoryStub,
+    repository: RecipesRepository,
     dataStoreManager: FavoriteDataStoreManager
 ): FavoritesViewModel {
     val context = LocalContext.current
@@ -204,7 +218,19 @@ private fun favoritesViewModel(
 @Preview
 @Composable
 fun RecipesAppPreview() {
+    val mockApiService = object : RecipesApiService {
+        override suspend fun getCategories(): List<CategoryDto> = emptyList()
+        override suspend fun getRecipesByCategory(categoryId: Int): List<RecipeDto> =
+            emptyList()
+        override suspend fun getRecipe(recipeId: Int): RecipeDto = RecipeDto(
+            id = recipeId,
+            title = "Mock",
+            imageUrl = "",
+            ingredients = emptyList(),
+            method = emptyList()
+        )
+    }
     RecipeCompAppTheme {
-        RecipesApp(deepLinkIntent = null)
+        RecipesApp(apiService = mockApiService, deepLinkIntent = null)
     }
 }

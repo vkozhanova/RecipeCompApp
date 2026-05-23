@@ -16,23 +16,29 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.viewmodel.compose.viewModel
+import com.example.recipecompapp.data.model.CategoryDto
 import com.example.recipecompapp.R
 import com.example.recipecompapp.core.ui.screenheader.ScreenHeader
+import com.example.recipecompapp.data.model.RecipeDto
+import com.example.recipecompapp.data.repository.RecipesRepository
 import com.example.recipecompapp.features.categories.presentation.CategoriesViewModel
 import com.example.recipecompapp.ui.theme.RecipeCompAppTheme
 
 @Composable
 fun CategoriesScreen(
+    repository: RecipesRepository,
     modifier: Modifier = Modifier,
-    viewModel: CategoriesViewModel = viewModel(),
     onCategoryClick: (Int, String, String) -> Unit = { _, _, _ -> }
 ) {
+    val viewModel: CategoriesViewModel = remember(repository) {
+        CategoriesViewModel(repository)
+    }
     val uiState by viewModel.uiState.collectAsState()
 
     Column(
@@ -96,6 +102,20 @@ fun CategoriesScreen(
 @Composable
 fun CategoriesScreenPreview() {
     RecipeCompAppTheme {
-        CategoriesScreen()
+        CategoriesScreen(
+            repository = object : RecipesRepository {
+                override suspend fun getCategories(): List<CategoryDto> = emptyList()
+                override suspend fun getRecipesByCategory(categoryId: Int): List<RecipeDto> =
+                    emptyList()
+
+                override suspend fun getRecipe(recipeId: Int): RecipeDto = RecipeDto(
+                    id = recipeId,
+                    title = "Mock",
+                    imageUrl = "",
+                    ingredients = emptyList(),
+                    method = emptyList()
+                )
+            }
+        )
     }
 }

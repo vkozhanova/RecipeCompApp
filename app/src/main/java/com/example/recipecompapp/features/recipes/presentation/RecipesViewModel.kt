@@ -4,7 +4,7 @@ import android.net.Uri
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.recipecompapp.data.repository.RecipesRepositoryStub
+import com.example.recipecompapp.data.repository.RecipesRepository
 import com.example.recipecompapp.features.recipes.presentation.model.RecipesUiState
 import com.example.recipecompapp.features.recipes.presentation.model.toUiModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -16,7 +16,8 @@ import java.net.URLDecoder
 import kotlin.String
 
 class RecipesViewModel(
-    private val savedStateHandle: SavedStateHandle
+    private val savedStateHandle: SavedStateHandle,
+    private val repository: RecipesRepository
 ) : ViewModel() {
 
     private val categoryId: Int = savedStateHandle["categoryId"] ?: 0
@@ -51,7 +52,7 @@ class RecipesViewModel(
             _uiState.update { it.copy(isLoading = true, error = null) }
 
             try {
-                val recipesDto = RecipesRepositoryStub.getRecipesByCategoryId(categoryId)
+                val recipesDto = repository.getRecipesByCategory(categoryId)
                 val recipes = recipesDto.map { it.toUiModel() }
 
                 _uiState.update {
