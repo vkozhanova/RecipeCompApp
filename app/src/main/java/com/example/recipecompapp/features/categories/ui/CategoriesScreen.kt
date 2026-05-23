@@ -36,7 +36,7 @@ fun CategoriesScreen(
     modifier: Modifier = Modifier,
     onCategoryClick: (Int, String, String) -> Unit = { _, _, _ -> }
 ) {
-    val viewModel: CategoriesViewModel = remember {
+    val viewModel: CategoriesViewModel = remember(repository) {
         CategoriesViewModel(repository)
     }
     val uiState by viewModel.uiState.collectAsState()
