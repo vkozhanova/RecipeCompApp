@@ -1,6 +1,5 @@
 package com.example.recipecompapp
 
-import android.annotation.SuppressLint
 import android.app.Application
 import android.content.Intent
 import android.net.Uri
