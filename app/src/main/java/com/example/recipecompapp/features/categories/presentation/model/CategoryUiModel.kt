@@ -2,7 +2,7 @@ package com.example.recipecompapp.features.categories.presentation.model
 
 import androidx.compose.runtime.Immutable
 import com.example.recipecompapp.data.model.CategoryDto
-import com.example.recipecompapp.core.Constants.ASSETS_URI_PREFIX
+import com.example.recipecompapp.core.Constants.IMAGES_BASE_URL
 import kotlin.String
 
 @Immutable
@@ -17,7 +17,7 @@ fun CategoryDto.toUiModel(): CategoryUiModel {
     val processedImageUrl = if (this.imageUrl?.startsWith("http") == true) {
         this.imageUrl
     } else {
-        ASSETS_URI_PREFIX + (this.imageUrl ?: "")
+        IMAGES_BASE_URL + (this.imageUrl ?: "")
     }
     return CategoryUiModel(
         id = this.id,

@@ -3,7 +3,7 @@ package com.example.recipecompapp.features.recipes.presentation.model
 import android.os.Parcelable
 import androidx.compose.runtime.Immutable
 import com.example.recipecompapp.data.model.RecipeDto
-import com.example.recipecompapp.core.Constants.ASSETS_URI_PREFIX
+import com.example.recipecompapp.core.Constants.IMAGES_BASE_URL
 import com.example.recipecompapp.ui.recipes.model.IngredientUiModel
 import com.example.recipecompapp.ui.recipes.model.toUiModel
 import kotlinx.parcelize.Parcelize
@@ -27,7 +27,7 @@ fun RecipeDto.toUiModel(): RecipeUiModel {
         }
 
         this.imageUrl != null -> {
-            val assetUrl = ASSETS_URI_PREFIX + this.imageUrl
+            val assetUrl =  IMAGES_BASE_URL + this.imageUrl
             assetUrl
         }
 
