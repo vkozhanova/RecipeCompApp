@@ -5,6 +5,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
@@ -21,10 +22,13 @@ fun RecipeImage(
     modifier: Modifier = Modifier,
     contentScale: ContentScale = ContentScale.Crop,
 ) {
+    val errorImage = painterResource(R.drawable.img_error)
+    val context = LocalContext.current
+
     if (imageUrl.isNullOrEmpty()) {
         Box(modifier, contentAlignment = Alignment.Center) {
             Image(
-                painter = painterResource(R.drawable.img_error),
+                painter = errorImage,
                 contentDescription = null,
                 modifier = Modifier.fillMaxSize(),
                 contentScale = contentScale
@@ -33,12 +37,15 @@ fun RecipeImage(
         return
     }
 
-    SubcomposeAsyncImage(
-        model = ImageRequest.Builder(LocalContext.current)
+    val imageRequest = remember(imageUrl) {
+        ImageRequest.Builder(context)
             .data(imageUrl)
-            .crossfade(true)
             .crossfade(300)
-            .build(),
+            .build()
+    }
+
+    SubcomposeAsyncImage(
+        model = imageRequest,
         contentDescription = contentDescription,
         modifier = modifier,
         contentScale = contentScale,
@@ -50,7 +57,7 @@ fun RecipeImage(
         error = {
             Box(Modifier.fillMaxSize(), Alignment.Center) {
                 Image(
-                    painter = painterResource(R.drawable.img_error),
+                    painter = errorImage,
                     contentDescription = null,
                     modifier = Modifier.fillMaxSize(),
                     contentScale = contentScale

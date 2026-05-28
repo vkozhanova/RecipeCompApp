@@ -56,7 +56,7 @@ fun RecipeItem(
             horizontalAlignment = Alignment.Start
         ) {
            RecipeImage(
-               imageUrl = recipe.imageUrl ?: "",
+               imageUrl = recipe.imageUrl,
                contentDescription = recipe.title,
                modifier = Modifier
                    .fillMaxWidth()
