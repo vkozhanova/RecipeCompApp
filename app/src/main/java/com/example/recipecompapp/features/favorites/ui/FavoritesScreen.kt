@@ -26,7 +26,7 @@ import com.example.recipecompapp.core.ui.screenheader.ScreenHeader
 import com.example.recipecompapp.ui.theme.RecipeCompAppTheme
 import com.example.recipecompapp.R
 import com.example.recipecompapp.features.favorites.presentation.FavoritesViewModel
-import com.example.recipecompapp.ui.recipes.components.RecipeItem
+import com.example.recipecompapp.features.recipes.ui.RecipeItem
 
 @Composable
 fun FavoritesScreen(

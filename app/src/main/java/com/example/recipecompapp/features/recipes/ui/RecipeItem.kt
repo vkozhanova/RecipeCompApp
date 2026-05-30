@@ -1,4 +1,4 @@
-package com.example.recipecompapp.ui.recipes.components
+package com.example.recipecompapp.features.recipes.ui
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -14,20 +14,15 @@ import androidx.compose.material3.Card
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import coil.compose.AsyncImage
-import coil.request.ImageRequest
-import com.example.recipecompapp.R
+import com.example.recipecompapp.core.ui.RecipeImage
 import com.example.recipecompapp.features.recipes.presentation.model.RecipeUiModel
 import com.example.recipecompapp.ui.theme.recipesAppTypography
 import kotlin.Int
@@ -41,15 +36,6 @@ fun RecipeItem(
     if (recipe.id < 0 || recipe.title.isBlank()) {
         return
     }
-
-    val context = LocalContext.current
-    val imageRequest = remember(recipe.id) {
-        ImageRequest.Builder(context)
-            .data(recipe.imageUrl)
-            .crossfade(true)
-            .build()
-    }
-
     Card(
         modifier = modifier
             .fillMaxWidth()
@@ -69,22 +55,20 @@ fun RecipeItem(
             verticalArrangement = Arrangement.Top,
             horizontalAlignment = Alignment.Start
         ) {
-            AsyncImage(
-                model = imageRequest,
-                contentDescription = recipe.title,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(100.dp)
-                    .clip(
-                        RoundedCornerShape(
-                            topStart = 8.dp,
-                            topEnd = 8.dp
-                        )
-                    ),
-                contentScale = ContentScale.Crop,
-                placeholder = painterResource(R.drawable.img_error),
-                error = painterResource(R.drawable.img_error)
-            )
+           RecipeImage(
+               imageUrl = recipe.imageUrl,
+               contentDescription = recipe.title,
+               modifier = Modifier
+                   .fillMaxWidth()
+                   .height(100.dp)
+                   .clip(
+                       RoundedCornerShape(
+                           topStart = 8.dp,
+                           topEnd = 8.dp
+                       )
+                   ),
+               contentScale = ContentScale.Crop
+           )
             Box(
                 modifier = Modifier
                     .fillMaxWidth()

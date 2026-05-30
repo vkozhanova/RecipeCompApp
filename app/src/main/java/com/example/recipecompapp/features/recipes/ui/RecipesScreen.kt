@@ -25,7 +25,6 @@ import androidx.compose.ui.unit.dp
 import com.example.recipecompapp.R
 import com.example.recipecompapp.core.ui.screenheader.ScreenHeader
 import com.example.recipecompapp.features.recipes.presentation.RecipesViewModel
-import com.example.recipecompapp.ui.recipes.components.RecipeItem
 import com.example.recipecompapp.features.recipes.presentation.model.RecipeUiModel
 import com.example.recipecompapp.ui.theme.RecipeCompAppTheme
 
