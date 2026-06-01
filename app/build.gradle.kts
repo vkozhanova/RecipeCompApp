@@ -4,6 +4,7 @@ plugins {
     alias(libs.plugins.kotlin.compose)
     id ("kotlin-parcelize")
     alias(libs.plugins.kotlin.serialization)
+    id("com.google.devtools.ksp") version "2.1.0-RC-1.0.27"
 
 }
 
@@ -50,6 +51,10 @@ android {
 }
 
 dependencies {
+    implementation(libs.androidx.room.runtime)
+    implementation(libs.androidx.room.ktx)
+    ksp(libs.androidx.room.compiler)
+
     implementation(libs.logging.interceptor)
     implementation(libs.retrofit2.kotlinx.serialization.converter)
     implementation(libs.retrofit)
