@@ -5,17 +5,20 @@ import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
 import com.example.recipecompapp.data.database.dao.CategoryDao
+import com.example.recipecompapp.data.database.dao.RecipeDao
 import com.example.recipecompapp.data.database.entity.CategoryEntity
+import com.example.recipecompapp.data.database.entity.RecipeEntity
 import kotlin.jvm.java
 
 @Database(
-    entities = [CategoryEntity::class],
+    entities = [CategoryEntity::class, RecipeEntity::class],
     version = 1,
     exportSchema = false
 )
 
 abstract class RecipesDatabase : RoomDatabase() {
     abstract fun categoryDao(): CategoryDao
+    abstract fun recipeDao(): RecipeDao
     companion object {
         @Volatile
         private var INSTANCE: RecipesDatabase? = null
