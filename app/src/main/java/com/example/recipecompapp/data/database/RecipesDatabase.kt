@@ -4,15 +4,18 @@ import android.content.Context
 import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
+import androidx.room.TypeConverters
+import com.example.recipecompapp.data.database.converter.Converters
 import com.example.recipecompapp.data.database.dao.CategoryDao
 import com.example.recipecompapp.data.database.dao.RecipeDao
 import com.example.recipecompapp.data.database.entity.CategoryEntity
 import com.example.recipecompapp.data.database.entity.RecipeEntity
 import kotlin.jvm.java
 
+@TypeConverters(Converters::class)
 @Database(
     entities = [CategoryEntity::class, RecipeEntity::class],
-    version = 1,
+    version = 2,
     exportSchema = false
 )
 
