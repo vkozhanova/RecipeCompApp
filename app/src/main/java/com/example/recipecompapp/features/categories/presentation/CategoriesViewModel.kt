@@ -8,13 +8,15 @@ import com.example.recipecompapp.features.categories.presentation.model.toUiMode
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 class CategoriesViewModel(
     private val repository: RecipesRepository
 ) : ViewModel() {
-    private val _uiState = MutableStateFlow(CategoriesUiState())
+    private val _uiState = MutableStateFlow(CategoriesUiState(isLoading = true))
     val uiState: StateFlow<CategoriesUiState> = _uiState.asStateFlow()
 
     init {
@@ -23,19 +25,25 @@ class CategoriesViewModel(
 
     private fun loadCategories() {
         viewModelScope.launch {
-            _uiState.update { currentState ->
-                currentState.copy(
-                    isLoading = true,
-                    error = null
-                )
-            }
-            try {
-                val categoriesDto = repository.getCategories()
-                val uiCategories = categoriesDto.map { it.toUiModel() }
-                _uiState.update { it.copy(categories = uiCategories, isLoading = false) }
-            } catch (e: Exception) {
-                _uiState.update { it.copy(isLoading = false, error = e.message) }
-            }
+            repository.getCategories()
+                .map { categoriesDto -> categoriesDto.map { it.toUiModel() } }
+                .catch { e ->
+                    _uiState.update {
+                        it.copy(
+                            isLoading = false,
+                            error = e.message
+                        )
+                    }
+                }
+                .collect { categories ->
+                    _uiState.update {
+                        it.copy(
+                            categories = categories,
+                            isLoading = false,
+                            error = null
+                        )
+                    }
+                }
         }
     }
 }

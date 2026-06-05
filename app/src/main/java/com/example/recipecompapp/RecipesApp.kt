@@ -30,6 +30,7 @@ import com.example.recipecompapp.core.ui.BottomNavigation
 import com.example.recipecompapp.core.navigation.Destination
 import com.example.recipecompapp.core.network.NetworkConfig.BASE_URL
 import com.example.recipecompapp.core.network.api.RecipesApiService
+import com.example.recipecompapp.data.database.RecipesDatabase
 import com.example.recipecompapp.data.repository.RecipesRepository
 import com.example.recipecompapp.data.repository.RecipesRepositoryImpl
 import com.example.recipecompapp.features.details.presentation.RecipeDetailsViewModel
@@ -51,6 +52,9 @@ fun RecipesApp(
     onDeepLinkConsumed: () -> Unit
 ) {
     RecipeCompAppTheme {
+        val context = LocalContext.current
+        val database = RecipesDatabase.buildDatabase(context)
+
         val okHttpClient = remember {
             val loggingInterceptor = HttpLoggingInterceptor().apply {
                 level =
@@ -75,12 +79,11 @@ fun RecipesApp(
                 .build()
         }
         val apiService = remember(retrofit) { retrofit.create(RecipesApiService::class.java) }
-        val repository: RecipesRepository = remember(apiService) {
-            RecipesRepositoryImpl(apiService)
+        val repository: RecipesRepository = remember(apiService, database) {
+            RecipesRepositoryImpl(apiService, database)
         }
 
         val navController = rememberNavController()
-        val context = LocalContext.current
         val application = context.applicationContext as Application
         val dataStoreManager = remember { FavoriteDataStoreManager(context) }
         val favoriteCountFlow = remember { dataStoreManager.getFavoriteCountFlow() }
@@ -91,7 +94,7 @@ fun RecipesApp(
                 if (recipeId != null) {
                     navController.navigate(Destination.RecipeDetails.createRoute(recipeId))
                 }
-                    onDeepLinkConsumed()
+                onDeepLinkConsumed()
             }
         }
 
@@ -124,17 +127,23 @@ fun RecipesApp(
                 startDestination = Destination.Categories.route,
                 modifier = Modifier.padding(paddingValues)
             ) {
-                composable(Destination.Categories.route){
+                composable(Destination.Categories.route) {
                     val onCategoryClick = remember(navController) {
-                    { categoryId: Int, title: String, imageUrl: String ->
-                        navController.navigate(Destination.Recipes.createRoute(categoryId, title, imageUrl))
+                        { categoryId: Int, title: String, imageUrl: String ->
+                            navController.navigate(
+                                Destination.Recipes.createRoute(
+                                    categoryId,
+                                    title,
+                                    imageUrl
+                                )
+                            )
+                        }
                     }
-                }
                     CategoriesScreen(
                         repository = repository,
                         onCategoryClick = onCategoryClick
-                            )
-                        }
+                    )
+                }
 
                 composable(
                     route = Destination.Recipes.route,
@@ -163,9 +172,13 @@ fun RecipesApp(
                         dataStoreManager
                     )
                     FavoritesScreen(
-                        onRecipeClick = remember (navController) {
+                        onRecipeClick = remember(navController) {
                             { recipeId ->
-                                navController.navigate(Destination.RecipeDetails.createRoute(recipeId))
+                                navController.navigate(
+                                    Destination.RecipeDetails.createRoute(
+                                        recipeId
+                                    )
+                                )
                             }
                         },
                         viewModel = viewModel
