@@ -53,7 +53,7 @@ fun RecipesApp(
 ) {
     RecipeCompAppTheme {
         val context = LocalContext.current
-        val database = RecipesDatabase.buildDatabase(context)
+        val database = remember { RecipesDatabase.buildDatabase(context) }
 
         val okHttpClient = remember {
             val loggingInterceptor = HttpLoggingInterceptor().apply {
