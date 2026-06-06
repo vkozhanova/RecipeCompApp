@@ -16,7 +16,7 @@ interface RecipeDao {
     suspend fun insertRecipesList(recipes: List<RecipeEntity>)
 
     @Query("SELECT * FROM recipes  WHERE category_id = :categoryId")
-    fun getRecipesList(categoryId: Int): Flow<List<RecipeEntity>>
+    fun getRecipesList(categoryId: String): Flow<List<RecipeEntity>>
 
     @Query("SELECT * FROM recipes WHERE id = :recipeId")
     fun getRecipeById(recipeId: Int): Flow<RecipeEntity?>

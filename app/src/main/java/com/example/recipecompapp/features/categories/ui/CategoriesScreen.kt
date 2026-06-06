@@ -29,6 +29,8 @@ import com.example.recipecompapp.data.model.RecipeDto
 import com.example.recipecompapp.data.repository.RecipesRepository
 import com.example.recipecompapp.features.categories.presentation.CategoriesViewModel
 import com.example.recipecompapp.ui.theme.RecipeCompAppTheme
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flowOf
 
 @Composable
 fun CategoriesScreen(
@@ -104,9 +106,9 @@ fun CategoriesScreenPreview() {
     RecipeCompAppTheme {
         CategoriesScreen(
             repository = object : RecipesRepository {
-                override suspend fun getCategories(): List<CategoryDto> = emptyList()
-                override suspend fun getRecipesByCategory(categoryId: Int): List<RecipeDto> =
-                    emptyList()
+                override fun getCategories(): Flow<List<CategoryDto>> = flowOf(emptyList())
+                override fun getRecipesByCategory(categoryId: Int): Flow<List<RecipeDto>> =
+                    flowOf(emptyList())
 
                 override suspend fun getRecipe(recipeId: Int): RecipeDto = RecipeDto(
                     id = recipeId,
