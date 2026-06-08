@@ -12,6 +12,7 @@ import com.example.recipecompapp.data.model.toEntity
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -20,11 +21,12 @@ class RecipesRepositoryImpl(
     private val recipesApiService: RecipesApiService,
     private val database: RecipesDatabase
 ) : RecipesRepository {
+    private val scope = CoroutineScope(Dispatchers.IO)
     private val categoryDao: CategoryDao = database.categoryDao()
     private val recipeDao: RecipeDao = database.recipeDao()
 
     override fun getCategories(): Flow<List<CategoryDto>> {
-        CoroutineScope(Dispatchers.IO).launch {
+        scope.launch {
             try {
                 val freshCategories = recipesApiService.getCategories()
                 categoryDao.insertCategory(freshCategories.map { it.toEntity() })
@@ -36,7 +38,7 @@ class RecipesRepositoryImpl(
     }
 
     override fun getRecipesByCategory(categoryId: Int): Flow<List<RecipeDto>> {
-        CoroutineScope(Dispatchers.IO).launch {
+        scope.launch {
             try {
                 val freshRecipes = recipesApiService.getRecipesByCategory(categoryId)
                 val entities = freshRecipes.map { it.toEntity(categoryId) }
@@ -50,14 +52,29 @@ class RecipesRepositoryImpl(
         }
     }
 
-    override suspend fun getRecipe(recipeId: Int): RecipeDto {
+    override suspend fun getRecipesByIds(recipeIds: List<Int>): List<RecipeDto> {
         return withContext(Dispatchers.IO) {
+            val entities = recipeDao.getRecipesByIdsList(recipeIds)
+            entities.map { it.toDto() }
+        }
+    }
+
+    override fun getRecipe(recipeId: Int): Flow<RecipeDto?> {
+        scope.launch {
             try {
-                recipesApiService.getRecipe(recipeId)
+                val freshRecipe = recipesApiService.getRecipe(recipeId)
+                val existingRecipe = recipeDao.getRecipeById(recipeId).firstOrNull()
+                val categoryId = existingRecipe?.categoryId?.toIntOrNull()
+                if (categoryId != null) {
+                    val entity = freshRecipe.toEntity(categoryId)
+                    recipeDao.insertRecipe(entity)
+                } else {
+                    Log.e("!!!", "Рецепт $recipeId не сохранён: неизвестна категория")
+                }
             } catch (e: Exception) {
-                Log.e("!!!", "Ошибка при получении рецепта $recipeId: ${e.message}", e)
-                throw e
+                Log.e("!!!", "Ошибка обновления рецепта $recipeId: ${e.message}", e)
             }
         }
+        return recipeDao.getRecipeById(recipeId).map { it?.toDto() }
     }
 }

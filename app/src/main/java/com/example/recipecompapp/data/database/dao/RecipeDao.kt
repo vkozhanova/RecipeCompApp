@@ -15,6 +15,12 @@ interface RecipeDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertRecipesList(recipes: List<RecipeEntity>)
 
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insertRecipe(recipe: RecipeEntity)
+
+    @Query("SELECT * FROM recipes WHERE id IN (:recipeIds)")
+    suspend fun getRecipesByIdsList(recipeIds: List<Int>): List<RecipeEntity>
+
     @Query("SELECT * FROM recipes  WHERE category_id = :categoryId")
     fun getRecipesList(categoryId: String): Flow<List<RecipeEntity>>
 

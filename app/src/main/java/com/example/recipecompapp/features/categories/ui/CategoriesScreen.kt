@@ -1,5 +1,6 @@
 package com.example.recipecompapp.features.categories.ui
 
+import android.annotation.SuppressLint
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -16,7 +17,6 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
@@ -34,13 +34,10 @@ import kotlinx.coroutines.flow.flowOf
 
 @Composable
 fun CategoriesScreen(
-    repository: RecipesRepository,
+    viewModel: CategoriesViewModel,
     modifier: Modifier = Modifier,
     onCategoryClick: (Int, String, String) -> Unit = { _, _, _ -> }
 ) {
-    val viewModel: CategoriesViewModel = remember(repository) {
-        CategoriesViewModel(repository)
-    }
     val uiState by viewModel.uiState.collectAsState()
 
     Column(
@@ -100,24 +97,22 @@ fun CategoriesScreen(
     }
 }
 
+@SuppressLint("ViewModelConstructorInComposable")
 @Preview
 @Composable
 fun CategoriesScreenPreview() {
     RecipeCompAppTheme {
-        CategoriesScreen(
+        val mockViewModel = CategoriesViewModel(
             repository = object : RecipesRepository {
                 override fun getCategories(): Flow<List<CategoryDto>> = flowOf(emptyList())
                 override fun getRecipesByCategory(categoryId: Int): Flow<List<RecipeDto>> =
                     flowOf(emptyList())
 
-                override suspend fun getRecipe(recipeId: Int): RecipeDto = RecipeDto(
-                    id = recipeId,
-                    title = "Mock",
-                    imageUrl = "",
-                    ingredients = emptyList(),
-                    method = emptyList()
-                )
+                override fun getRecipe(recipeId: Int): Flow<RecipeDto?> = flowOf(null)
+                override suspend fun getRecipesByIds(recipeIds: List<Int>): List<RecipeDto> =
+                    emptyList()
             }
         )
+        CategoriesScreen(viewModel = mockViewModel)
     }
 }
