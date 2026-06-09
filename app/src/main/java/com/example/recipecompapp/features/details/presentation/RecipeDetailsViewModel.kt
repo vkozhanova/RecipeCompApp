@@ -23,7 +23,7 @@ class RecipeDetailsViewModel(
     application: Application,
     private val savedStateHandle: SavedStateHandle,
     private val resources: Resources,
-    private val  repository: RecipesRepository,
+    private val repository: RecipesRepository,
     private val dataStoreManager: FavoriteDataStoreManager,
 ) : AndroidViewModel(application) {
     private val recipeId = savedStateHandle["recipeId"] ?: -1
@@ -31,62 +31,66 @@ class RecipeDetailsViewModel(
     val uiState: StateFlow<RecipeDetailsUiState> = _uiState.asStateFlow()
 
     init {
-        loadRecipe(recipeId)
+        loadRecipe()
         observeFavoriteStatus()
     }
 
-    private fun loadRecipe(recipeId: Int) {
+    private fun loadRecipe() {
         viewModelScope.launch {
-            _uiState.update { it.copy(isLoading = true, error = null) }
-            try {
-                val recipeDto = repository.getRecipe(recipeId)
-                    val recipeUi = recipeDto.toUiModel()
-                    val restoredPortions =
-                        savedStateHandle.get<Int>(KEY_SERVINGS) ?: DEFAULT_SERVINGS
-                    val newSate = RecipeDetailsUiState(
-                        recipe = recipeUi,
-                        currentPortions = restoredPortions,
-                        isLoading = false,
-                        isFavorite = _uiState.value.isFavorite,
-                        error = null,
-                        scaledIngredients = emptyList()
-                    )
-                    val scaled = newSate.recalcIngredients()
-                    _uiState.update { newSate.copy(scaledIngredients = scaled) }
-            } catch (e: Exception) {
-                _uiState.update {
-                    it.copy(
-                        error = e.message ?: resources.getString(R.string.download_error),
-                        isLoading = false
-                    )
-                }
-            }
-        }
-    }
-
-    private fun observeFavoriteStatus() {
-        viewModelScope.launch {
-            dataStoreManager.isFavoriteFlow(recipeId)
+            repository.getRecipe(recipeId)
                 .catch { e ->
-                    e.printStackTrace()
+                    _uiState.update {
+                        it.copy(
+                            isLoading = false,
+                            error = e.message ?: resources.getString(R.string.unknown_error)
+                        )
+                    }
                 }
-                .collect { isFavorite ->
-                    _uiState.update { it.copy(isFavorite = isFavorite) }
+                .collect { recipeDto ->
+                    _uiState.update { currentState ->
+                        if (recipeDto == null) {
+                            currentState.copy(isLoading = false, error = resources.getString(R.string.not_available_offline))
+                        } else {
+                            val recipeUi = recipeDto.toUiModel()
+                            val restoredPortions = savedStateHandle.get<Int>(KEY_SERVINGS) ?: DEFAULT_SERVINGS
+                            val newState = currentState.copy(
+                                recipe = recipeUi,
+                                currentPortions = restoredPortions,
+                                isLoading = false,
+                                error = null
+                            )
+                           val scaled = newState.recalcIngredients()
+                            newState.copy(scaledIngredients = scaled)
+                        }
+                    }
                 }
         }
     }
 
-    fun updatePortions(portions: Int) {
-        val currentState = _uiState.value
-        val newState = currentState.copy(currentPortions = portions)
-        val newScaled = newState.recalcIngredients()
-        _uiState.update { newState.copy(scaledIngredients = newScaled) }
-        savedStateHandle[KEY_SERVINGS] = portions
-    }
 
-    fun toggleFavorite() {
-        viewModelScope.launch {
-            dataStoreManager.toggleFavorite(recipeId)
-        }
+private fun observeFavoriteStatus() {
+    viewModelScope.launch {
+        dataStoreManager.isFavoriteFlow(recipeId)
+            .catch { e ->
+                e.printStackTrace()
+            }
+            .collect { isFavorite ->
+                _uiState.update { it.copy(isFavorite = isFavorite) }
+            }
     }
+}
+
+fun updatePortions(portions: Int) {
+    val currentState = _uiState.value
+    val newState = currentState.copy(currentPortions = portions)
+    val newScaled = newState.recalcIngredients()
+    _uiState.update { newState.copy(scaledIngredients = newScaled) }
+    savedStateHandle[KEY_SERVINGS] = portions
+}
+
+fun toggleFavorite() {
+    viewModelScope.launch {
+        dataStoreManager.toggleFavorite(recipeId)
+    }
+}
 }

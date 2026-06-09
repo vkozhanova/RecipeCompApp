@@ -11,4 +11,6 @@
     <string name="recipes">Рецепты</string>
     <string name="download_error">Ошибка загрузки</string>
     <string name="favorites_error">Ошибка загрузки избранного</string>
+    <string name="unknown_error">Неизвестная ошибка</string>
+    <string name="not_available_offline">Рецепт недоступен офлайн</string>
 </resources>

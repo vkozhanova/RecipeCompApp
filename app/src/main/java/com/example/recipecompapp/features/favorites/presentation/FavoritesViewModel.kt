@@ -1,7 +1,6 @@
 package com.example.recipecompapp.features.favorites.presentation
 
 import android.content.res.Resources
-import android.util.Log
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -14,7 +13,6 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.catch
-import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
@@ -42,31 +40,38 @@ class FavoritesViewModel(
                         )
                     }
                 }
-                .map { ids ->
-                    ids.mapNotNull { id ->
+                .collect { ids ->
+                    if (ids.isEmpty()) {
+                        _uiState.update {
+                            it.copy(
+                                recipes = emptyList(),
+                                isLoading = false,
+                                error = null
+                            )
+                        }
+                    } else {
+                        _uiState.update { it.copy(isLoading = true) }
                         try {
-                            repository.getRecipe(id.toIntOrNull() ?: -1).toUiModel()
+                            val recipeIds = ids.mapNotNull { it.toIntOrNull() }
+                            val recipes = repository.getRecipesByIds(recipeIds)
+                            val uiModels = recipes.map { it.toUiModel() }
+                            _uiState.update {
+                                it.copy(
+                                    recipes = uiModels,
+                                    isLoading = false,
+                                    error = null
+                                )
+                            }
                         } catch (e: Exception) {
-                            Log.e("!!!", "Ошибка загрузки рецепта $id", e)
-                            null
+                            _uiState.update {
+                                it.copy(
+                                    isLoading = false,
+                                    error = e.message ?: resources.getString(R.string.favorites_error)
+                                )
+                            }
                         }
                     }
                 }
-                .collect { recipes ->
-                    _uiState.update {
-                        it.copy(
-                            recipes = recipes,
-                            isLoading = false,
-                            error = null
-                        )
-                    }
-                }
-        }
-    }
-
-    fun toggleFavorite(recipeId: Int) {
-        viewModelScope.launch {
-            dataStoreManager.toggleFavorite(recipeId)
         }
     }
 }

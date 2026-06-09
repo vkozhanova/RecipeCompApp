@@ -38,6 +38,23 @@ fun RecipeDetailsScreen(
     val uiState by viewModel.uiState.collectAsState()
     val context = LocalContext.current
 
+    val onServingsChange = remember {
+        { servings: Int -> viewModel.updatePortions(servings) }
+    }
+    val onFavoriteClick = remember {
+        { viewModel.toggleFavorite() }
+    }
+    val recipe = uiState.recipe
+    val onSharedClick = remember(recipe?.id, recipe?.title) {
+        {
+            ShareUtils.shareRecipe(
+                context,
+                recipe?.id ?: -1,
+                recipe?.title.orEmpty()
+            )
+        }
+    }
+
     Scaffold(
         modifier = modifier,
         containerColor = MaterialTheme.colorScheme.background
@@ -77,15 +94,9 @@ fun RecipeDetailsScreen(
                             servings = uiState.currentPortions,
                             scaledIngredients = uiState.scaledIngredients,
                             isFavorite = uiState.isFavorite,
-                            onServingsChange = { viewModel.updatePortions(it) },
-                            onFavoriteClick = { viewModel.toggleFavorite() },
-                            onSharedClick = {
-                                ShareUtils.shareRecipe(
-                                    context,
-                                    recipe.id,
-                                    recipe.title
-                                )
-                            }
+                            onServingsChange = onServingsChange,
+                            onFavoriteClick = onFavoriteClick,
+                            onSharedClick = onSharedClick
                         )
                     }
                 }

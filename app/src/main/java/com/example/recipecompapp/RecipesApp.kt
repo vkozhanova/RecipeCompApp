@@ -33,9 +33,11 @@ import com.example.recipecompapp.core.network.api.RecipesApiService
 import com.example.recipecompapp.data.database.RecipesDatabase
 import com.example.recipecompapp.data.repository.RecipesRepository
 import com.example.recipecompapp.data.repository.RecipesRepositoryImpl
+import com.example.recipecompapp.features.categories.presentation.CategoriesViewModel
 import com.example.recipecompapp.features.details.presentation.RecipeDetailsViewModel
 import com.example.recipecompapp.features.favorites.presentation.FavoritesViewModel
 import com.example.recipecompapp.features.recipes.presentation.RecipesViewModel
+import com.example.recipecompapp.features.recipes.presentation.model.RecipeUiModel
 import com.example.recipecompapp.features.recipes.ui.RecipesScreen
 import com.example.recipecompapp.ui.theme.RecipeCompAppTheme
 import com.jakewharton.retrofit2.converter.kotlinx.serialization.asConverterFactory
@@ -128,6 +130,9 @@ fun RecipesApp(
                 modifier = Modifier.padding(paddingValues)
             ) {
                 composable(Destination.Categories.route) {
+                    val viewModel: CategoriesViewModel = viewModel {
+                        CategoriesViewModel(repository)
+                    }
                     val onCategoryClick = remember(navController) {
                         { categoryId: Int, title: String, imageUrl: String ->
                             navController.navigate(
@@ -140,7 +145,7 @@ fun RecipesApp(
                         }
                     }
                     CategoriesScreen(
-                        repository = repository,
+                        viewModel = viewModel,
                         onCategoryClick = onCategoryClick
                     )
                 }
@@ -156,55 +161,58 @@ fun RecipesApp(
                     val viewModel: RecipesViewModel = viewModel(backStackEntry) {
                         RecipesViewModel(backStackEntry.savedStateHandle, repository)
                     }
-                    RecipesScreen(
-                        viewModel = viewModel,
-                        onRecipeClick = { recipeId, _ ->
+                    val onRecipeClick = remember(navController) {
+                        { recipeId: Int, _: RecipeUiModel ->
                             Log.d("DEBUG", "Клик по рецепту $recipeId")
                             navController.navigate(Destination.RecipeDetails.createRoute(recipeId))
                         }
-                    )
-                }
-
-                composable(Destination.Favorites.route) { backStackEntry ->
-                    val viewModel: FavoritesViewModel = favoritesViewModel(
-                        backStackEntry,
-                        repository,
-                        dataStoreManager
-                    )
-                    FavoritesScreen(
-                        onRecipeClick = remember(navController) {
-                            { recipeId ->
-                                navController.navigate(
-                                    Destination.RecipeDetails.createRoute(
-                                        recipeId
-                                    )
-                                )
-                            }
-                        },
-                        viewModel = viewModel
-                    )
-                }
-
-                composable(
-                    route = Destination.RecipeDetails.route,
-                    arguments = listOf(
-                        navArgument(Constants.ARG_RECIPE_ID) { type = NavType.IntType })
-                ) { backStackEntry ->
-                    val viewModel: RecipeDetailsViewModel = recipeDetailsViewModel(
-                        backStackEntry,
-                        repository,
-                        dataStoreManager
-                    )
-                    RecipeDetailsScreen(
+                    }
+                    RecipesScreen(
                         viewModel = viewModel,
-                        onNavigateBack = remember(navController) {
-                            { navController.popBackStack() }
-                        }
+                        onRecipeClick = onRecipeClick
                     )
                 }
+
+            composable(Destination.Favorites.route) { backStackEntry ->
+                val viewModel: FavoritesViewModel = favoritesViewModel(
+                    backStackEntry,
+                    repository,
+                    dataStoreManager
+                )
+                FavoritesScreen(
+                    onRecipeClick = remember(navController) {
+                        { recipeId ->
+                            navController.navigate(
+                                Destination.RecipeDetails.createRoute(
+                                    recipeId
+                                )
+                            )
+                        }
+                    },
+                    viewModel = viewModel
+                )
+            }
+
+            composable(
+                route = Destination.RecipeDetails.route,
+                arguments = listOf(
+                    navArgument(Constants.ARG_RECIPE_ID) { type = NavType.IntType })
+            ) { backStackEntry ->
+                val viewModel: RecipeDetailsViewModel = recipeDetailsViewModel(
+                    backStackEntry,
+                    repository,
+                    dataStoreManager
+                )
+                RecipeDetailsScreen(
+                    viewModel = viewModel,
+                    onNavigateBack = remember(navController) {
+                        { navController.popBackStack() }
+                    }
+                )
             }
         }
     }
+}
 }
 
 private fun parseRecipeIdFromUri(uri: Uri): Int? {
