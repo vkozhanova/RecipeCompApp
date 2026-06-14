@@ -31,7 +31,7 @@ import com.example.recipecompapp.features.recipes.ui.RecipeItem
 @Composable
 fun FavoritesScreen(
     onRecipeClick: (Int) -> Unit,
-    viewModel: FavoritesViewModel = viewModel(),
+    viewModel: FavoritesViewModel,
     modifier: Modifier = Modifier
 ) {
     val uiState by viewModel.uiState.collectAsState()
@@ -103,6 +103,6 @@ fun FavoritesScreen(
 @Composable
 fun FavoritesScreenPreview() {
     RecipeCompAppTheme {
-        FavoritesScreen(onRecipeClick = {})
+        FavoritesScreen(onRecipeClick = {}, viewModel = viewModel())
     }
 }

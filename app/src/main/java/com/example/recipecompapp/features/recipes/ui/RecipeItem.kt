@@ -40,7 +40,7 @@ fun RecipeItem(
         modifier = modifier
             .fillMaxWidth()
             .height(132.dp)
-            .clickable{onClick(recipe.id)}
+            .clickable { onClick(recipe.id) }
             .shadow(
                 elevation = 4.dp,
                 shape = RoundedCornerShape(8.dp),
@@ -55,20 +55,20 @@ fun RecipeItem(
             verticalArrangement = Arrangement.Top,
             horizontalAlignment = Alignment.Start
         ) {
-           RecipeImage(
-               imageUrl = recipe.imageUrl,
-               contentDescription = recipe.title,
-               modifier = Modifier
-                   .fillMaxWidth()
-                   .height(100.dp)
-                   .clip(
-                       RoundedCornerShape(
-                           topStart = 8.dp,
-                           topEnd = 8.dp
-                       )
-                   ),
-               contentScale = ContentScale.Crop
-           )
+            RecipeImage(
+                imageUrl = recipe.imageUrl,
+                contentDescription = recipe.title,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(100.dp)
+                    .clip(
+                        RoundedCornerShape(
+                            topStart = 8.dp,
+                            topEnd = 8.dp
+                        )
+                    ),
+                contentScale = ContentScale.Crop
+            )
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
