@@ -1,7 +1,7 @@
 package com.example.recipecompapp.data.repository
 
 import android.util.Log
-import com.example.recipecompapp.core.network.api.RecipesApiService
+import com.example.recipecompapp.data.network.api.RecipesApiService
 import com.example.recipecompapp.data.database.RecipesDatabase
 import com.example.recipecompapp.data.database.dao.CategoryDao
 import com.example.recipecompapp.data.database.dao.RecipeDao

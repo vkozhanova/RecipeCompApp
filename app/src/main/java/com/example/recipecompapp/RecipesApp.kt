@@ -12,15 +12,12 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.lifecycle.viewmodel.compose.viewModel
-import androidx.navigation.NavBackStackEntry
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.example.recipecompapp.core.Constants
-import com.example.recipecompapp.data.local.datastore.FavoriteDataStoreManager
 import com.example.recipecompapp.core.Constants.DEEP_LINK_BASE_URL
 import com.example.recipecompapp.core.Constants.DEEP_LINK_SCHEME
 import com.example.recipecompapp.features.categories.ui.CategoriesScreen
@@ -28,25 +25,13 @@ import com.example.recipecompapp.features.details.ui.RecipeDetailsScreen
 import com.example.recipecompapp.features.favorites.ui.FavoritesScreen
 import com.example.recipecompapp.core.ui.BottomNavigation
 import com.example.recipecompapp.core.navigation.Destination
-import com.example.recipecompapp.core.network.NetworkConfig.BASE_URL
-import com.example.recipecompapp.core.network.api.RecipesApiService
-import com.example.recipecompapp.data.database.RecipesDatabase
-import com.example.recipecompapp.data.repository.RecipesRepository
-import com.example.recipecompapp.data.repository.RecipesRepositoryImpl
-import com.example.recipecompapp.features.categories.presentation.CategoriesViewModel
-import com.example.recipecompapp.features.details.presentation.RecipeDetailsViewModel
-import com.example.recipecompapp.features.favorites.presentation.FavoritesViewModel
-import com.example.recipecompapp.features.recipes.presentation.RecipesViewModel
+import com.example.recipecompapp.di.FavoritesViewModelFactory
+import com.example.recipecompapp.di.RecipeApplication
+import com.example.recipecompapp.di.RecipeDetailsViewModelFactory
+import com.example.recipecompapp.di.RecipesViewModelFactory
 import com.example.recipecompapp.features.recipes.presentation.model.RecipeUiModel
 import com.example.recipecompapp.features.recipes.ui.RecipesScreen
 import com.example.recipecompapp.ui.theme.RecipeCompAppTheme
-import com.jakewharton.retrofit2.converter.kotlinx.serialization.asConverterFactory
-import kotlinx.serialization.json.Json
-import okhttp3.MediaType.Companion.toMediaType
-import okhttp3.OkHttpClient
-import okhttp3.logging.HttpLoggingInterceptor
-import retrofit2.Retrofit
-import java.util.concurrent.TimeUnit
 
 @Composable
 fun RecipesApp(
@@ -55,40 +40,9 @@ fun RecipesApp(
 ) {
     RecipeCompAppTheme {
         val context = LocalContext.current
-        val database = remember { RecipesDatabase.buildDatabase(context) }
-
-        val okHttpClient = remember {
-            val loggingInterceptor = HttpLoggingInterceptor().apply {
-                level =
-                    if (BuildConfig.DEBUG) {
-                        HttpLoggingInterceptor.Level.BODY
-                    } else {
-                        HttpLoggingInterceptor.Level.NONE
-                    }
-            }
-            OkHttpClient.Builder()
-                .connectTimeout(15, TimeUnit.SECONDS)
-                .readTimeout(30, TimeUnit.SECONDS)
-                .writeTimeout(30, TimeUnit.SECONDS)
-                .addInterceptor(loggingInterceptor)
-                .build()
-        }
-        val retrofit = remember(okHttpClient) {
-            Retrofit.Builder()
-                .baseUrl(BASE_URL)
-                .client(okHttpClient)
-                .addConverterFactory(Json.asConverterFactory("application/json".toMediaType()))
-                .build()
-        }
-        val apiService = remember(retrofit) { retrofit.create(RecipesApiService::class.java) }
-        val repository: RecipesRepository = remember(apiService, database) {
-            RecipesRepositoryImpl(apiService, database)
-        }
-
+        val appContainer = (context.applicationContext as RecipeApplication).appContainer
         val navController = rememberNavController()
-        val application = context.applicationContext as Application
-        val dataStoreManager = remember { FavoriteDataStoreManager(context) }
-        val favoriteCountFlow = remember { dataStoreManager.getFavoriteCountFlow() }
+        val favoriteCountFlow = remember { appContainer.favoriteDataStoreManager.getFavoriteCountFlow() }
 
         LaunchedEffect(deepLinkIntent) {
             deepLinkIntent?.data?.let { uri ->
@@ -130,9 +84,6 @@ fun RecipesApp(
                 modifier = Modifier.padding(paddingValues)
             ) {
                 composable(Destination.Categories.route) {
-                    val viewModel: CategoriesViewModel = viewModel {
-                        CategoriesViewModel(repository)
-                    }
                     val onCategoryClick = remember(navController) {
                         { categoryId: Int, title: String, imageUrl: String ->
                             navController.navigate(
@@ -145,7 +96,6 @@ fun RecipesApp(
                         }
                     }
                     CategoriesScreen(
-                        viewModel = viewModel,
                         onCategoryClick = onCategoryClick
                     )
                 }
@@ -158,8 +108,12 @@ fun RecipesApp(
                         navArgument(Constants.ARG_CATEGORY_IMAGE_URL) { type = NavType.StringType }
                     )
                 ) { backStackEntry ->
-                    val viewModel: RecipesViewModel = viewModel(backStackEntry) {
-                        RecipesViewModel(backStackEntry.savedStateHandle, repository)
+                    val appContainer  = (LocalContext.current.applicationContext as RecipeApplication).appContainer
+                    val viewModel = remember {
+                        RecipesViewModelFactory(
+                            backStackEntry.savedStateHandle,
+                            appContainer.repository
+                        ).create()
                     }
                     val onRecipeClick = remember(navController) {
                         { recipeId: Int, _: RecipeUiModel ->
@@ -174,20 +128,24 @@ fun RecipesApp(
                 }
 
             composable(Destination.Favorites.route) { backStackEntry ->
-                val viewModel: FavoritesViewModel = favoritesViewModel(
-                    backStackEntry,
-                    repository,
-                    dataStoreManager
-                )
+                val context = LocalContext.current
+                val appContainer = (context.applicationContext as RecipeApplication).appContainer
+                val viewModel = remember {
+                    FavoritesViewModelFactory(
+                        application = context.applicationContext as Application,
+                        savedStateHandle = backStackEntry.savedStateHandle,
+                        resources = context.resources,
+                        repository = appContainer.repository,
+                        dataStoreManager = appContainer.favoriteDataStoreManager
+                    ).create()
+                }
                 FavoritesScreen(
-                    onRecipeClick = remember(navController) {
-                        { recipeId ->
+                    onRecipeClick = { recipeId ->
                             navController.navigate(
                                 Destination.RecipeDetails.createRoute(
                                     recipeId
                                 )
                             )
-                        }
                     },
                     viewModel = viewModel
                 )
@@ -198,16 +156,20 @@ fun RecipesApp(
                 arguments = listOf(
                     navArgument(Constants.ARG_RECIPE_ID) { type = NavType.IntType })
             ) { backStackEntry ->
-                val viewModel: RecipeDetailsViewModel = recipeDetailsViewModel(
-                    backStackEntry,
-                    repository,
-                    dataStoreManager
-                )
+                val context = LocalContext.current
+                val appContainer = (context.applicationContext as RecipeApplication).appContainer
+                val viewModel = remember {
+                    RecipeDetailsViewModelFactory(
+                        application = context.applicationContext as Application,
+                        savedStateHandle = backStackEntry.savedStateHandle,
+                        resources = context.resources,
+                        repository = appContainer.repository,
+                        dataStoreManager = appContainer.favoriteDataStoreManager
+                    ).create()
+                }
                 RecipeDetailsScreen(
                     viewModel = viewModel,
-                    onNavigateBack = remember(navController) {
-                        { navController.popBackStack() }
-                    }
+                    onNavigateBack = { navController.popBackStack() }
                 )
             }
         }
@@ -233,42 +195,6 @@ private fun parseRecipeIdFromUri(uri: Uri): Int? {
 }
 
 fun createRecipeDeepLink(recipeId: Int): String = "$DEEP_LINK_BASE_URL/recipe/$recipeId"
-
-@Composable
-private fun recipeDetailsViewModel(
-    backStackEntry: NavBackStackEntry,
-    repository: RecipesRepository,
-    dataStoreManager: FavoriteDataStoreManager
-): RecipeDetailsViewModel {
-    val context = LocalContext.current
-    val application = context.applicationContext as Application
-    return viewModel(backStackEntry) {
-        RecipeDetailsViewModel(
-            application = application,
-            savedStateHandle = backStackEntry.savedStateHandle,
-            resources = context.resources,
-            repository = repository,
-            dataStoreManager = dataStoreManager
-        )
-    }
-}
-
-@Composable
-private fun favoritesViewModel(
-    backStackEntry: NavBackStackEntry,
-    repository: RecipesRepository,
-    dataStoreManager: FavoriteDataStoreManager
-): FavoritesViewModel {
-    val context = LocalContext.current
-    return viewModel(backStackEntry) {
-        FavoritesViewModel(
-            savedStateHandle = backStackEntry.savedStateHandle,
-            resources = context.resources,
-            repository = repository,
-            dataStoreManager = dataStoreManager
-        )
-    }
-}
 
 @Preview
 @Composable
