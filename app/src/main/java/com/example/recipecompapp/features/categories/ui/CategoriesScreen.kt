@@ -35,7 +35,8 @@ fun CategoriesScreen(
     modifier: Modifier = Modifier,
     onCategoryClick: (Int, String, String) -> Unit = { _, _, _ -> }
 ) {
-    val appContainer = (LocalContext.current.applicationContext as RecipeApplication).appContainer
+    val appContainer = (LocalContext.current.applicationContext as? RecipeApplication)?.appContainer
+        ?: error("Application не является экземпляром RecipeApplication. Проверьте android:name=\".di.RecipeApplication\" в манифесте")
     val viewModel = remember { CategoriesViewModelFactory(appContainer.repository).create() }
     val uiState by viewModel.uiState.collectAsState()
 
