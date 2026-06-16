@@ -1,4 +1,4 @@
-package com.example.recipecompapp.core.network
+package com.example.recipecompapp.data.network
 
 object NetworkConfig {
      const val BASE_URL = "https://recipes.androidsprint.ru/api/"

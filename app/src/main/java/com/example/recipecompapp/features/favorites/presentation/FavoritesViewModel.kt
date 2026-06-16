@@ -1,8 +1,9 @@
 package com.example.recipecompapp.features.favorites.presentation
 
+import android.app.Application
 import android.content.res.Resources
+import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.SavedStateHandle
-import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.recipecompapp.R
 import com.example.recipecompapp.data.local.datastore.FavoriteDataStoreManager
@@ -17,11 +18,12 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 class FavoritesViewModel(
+    application: Application,
     private val savedStateHandle: SavedStateHandle,
     private val resources: Resources,
     private val repository: RecipesRepository,
     private val dataStoreManager: FavoriteDataStoreManager,
-) : ViewModel() {
+) : AndroidViewModel(application) {
     private val _uiState = MutableStateFlow(FavoritesUiState(isLoading = true))
     val uiState: StateFlow<FavoritesUiState> = _uiState.asStateFlow()
 
