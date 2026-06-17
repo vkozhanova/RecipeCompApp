@@ -17,17 +17,15 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.recipecompapp.R
 import com.example.recipecompapp.core.ui.screenheader.ScreenHeader
-import com.example.recipecompapp.di.CategoriesViewModelFactory
-import com.example.recipecompapp.di.RecipeApplication
+import com.example.recipecompapp.features.categories.presentation.CategoriesViewModel
 import com.example.recipecompapp.ui.theme.RecipeCompAppTheme
 
 @Composable
@@ -35,9 +33,7 @@ fun CategoriesScreen(
     modifier: Modifier = Modifier,
     onCategoryClick: (Int, String, String) -> Unit = { _, _, _ -> }
 ) {
-    val appContainer = (LocalContext.current.applicationContext as? RecipeApplication)?.appContainer
-        ?: error("Application не является экземпляром RecipeApplication. Проверьте android:name=\".di.RecipeApplication\" в манифесте")
-    val viewModel = remember { CategoriesViewModelFactory(appContainer.repository).create() }
+    val viewModel: CategoriesViewModel = hiltViewModel()
     val uiState by viewModel.uiState.collectAsState()
 
     Column(

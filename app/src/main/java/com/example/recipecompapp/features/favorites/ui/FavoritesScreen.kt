@@ -21,7 +21,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.recipecompapp.core.ui.screenheader.ScreenHeader
 import com.example.recipecompapp.ui.theme.RecipeCompAppTheme
 import com.example.recipecompapp.R
@@ -31,9 +31,9 @@ import com.example.recipecompapp.features.recipes.ui.RecipeItem
 @Composable
 fun FavoritesScreen(
     onRecipeClick: (Int) -> Unit,
-    viewModel: FavoritesViewModel,
     modifier: Modifier = Modifier
 ) {
+    val viewModel: FavoritesViewModel = hiltViewModel()
     val uiState by viewModel.uiState.collectAsState()
 
     Column(
@@ -103,6 +103,6 @@ fun FavoritesScreen(
 @Composable
 fun FavoritesScreenPreview() {
     RecipeCompAppTheme {
-        FavoritesScreen(onRecipeClick = {}, viewModel = viewModel())
+        FavoritesScreen(onRecipeClick = {})
     }
 }

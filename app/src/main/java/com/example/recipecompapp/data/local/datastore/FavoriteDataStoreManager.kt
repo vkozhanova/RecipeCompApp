@@ -2,12 +2,16 @@ package com.example.recipecompapp.data.local.datastore
 
 import android.content.Context
 import androidx.datastore.preferences.core.edit
+import dagger.hilt.android.qualifiers.ApplicationContext
+import jakarta.inject.Inject
+import jakarta.inject.Singleton
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 
-class FavoriteDataStoreManager(
-    private val context: Context
+@Singleton
+class FavoriteDataStoreManager @Inject constructor(
+    @ApplicationContext private val context: Context
 ) {
     suspend fun isFavorite(recipeId: Int): Boolean {
         return try {

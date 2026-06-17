@@ -9,6 +9,7 @@ import com.example.recipecompapp.data.model.CategoryDto
 import com.example.recipecompapp.data.model.RecipeDto
 import com.example.recipecompapp.data.model.toDto
 import com.example.recipecompapp.data.model.toEntity
+import jakarta.inject.Inject
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
@@ -17,7 +18,7 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
-class RecipesRepositoryImpl(
+class RecipesRepositoryImpl @Inject constructor(
     private val recipesApiService: RecipesApiService,
     private val database: RecipesDatabase
 ) : RecipesRepository {

@@ -7,6 +7,8 @@ import androidx.lifecycle.viewModelScope
 import com.example.recipecompapp.data.repository.RecipesRepository
 import com.example.recipecompapp.features.recipes.presentation.model.RecipesUiState
 import com.example.recipecompapp.features.recipes.presentation.model.toUiModel
+import dagger.hilt.android.lifecycle.HiltViewModel
+import jakarta.inject.Inject
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -17,7 +19,8 @@ import kotlinx.coroutines.launch
 import java.net.URLDecoder
 import kotlin.String
 
-class RecipesViewModel(
+@HiltViewModel
+class RecipesViewModel @Inject constructor(
     private val savedStateHandle: SavedStateHandle,
     private val repository: RecipesRepository
 ) : ViewModel() {

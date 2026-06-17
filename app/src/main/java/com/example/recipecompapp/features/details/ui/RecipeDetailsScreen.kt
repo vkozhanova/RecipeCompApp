@@ -19,6 +19,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.recipecompapp.R
 import com.example.recipecompapp.core.ui.screenheader.ScreenHeader
 import com.example.recipecompapp.core.navigation.ShareUtils
@@ -31,10 +32,10 @@ import kotlin.math.roundToInt
 
 @Composable
 fun RecipeDetailsScreen(
-    viewModel: RecipeDetailsViewModel,
     onNavigateBack: () -> Unit,
     modifier: Modifier = Modifier
 ) {
+    val viewModel: RecipeDetailsViewModel = hiltViewModel()
     val uiState by viewModel.uiState.collectAsState()
     val context = LocalContext.current
 
