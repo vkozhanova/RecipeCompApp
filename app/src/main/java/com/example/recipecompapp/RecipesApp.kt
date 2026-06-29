@@ -8,10 +8,13 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -23,13 +26,17 @@ import com.example.recipecompapp.core.Constants.DEEP_LINK_SCHEME
 import com.example.recipecompapp.features.categories.ui.CategoriesScreen
 import com.example.recipecompapp.features.details.ui.RecipeDetailsScreen
 import com.example.recipecompapp.features.favorites.ui.FavoritesScreen
-import com.example.recipecompapp.core.ui.BottomNavigation
+import com.example.recipecompapp.features.bottom.ui.BottomNavigation
 import com.example.recipecompapp.core.navigation.Destination
-import com.example.recipecompapp.di.DataStoreEntryPoint
+import com.example.recipecompapp.core.navigation.ShareUtils
+import com.example.recipecompapp.features.bottom.presentation.BottomNavigationViewModel
+import com.example.recipecompapp.features.categories.presentation.CategoriesViewModel
+import com.example.recipecompapp.features.details.presentation.RecipeDetailsViewModel
+import com.example.recipecompapp.features.favorites.presentation.FavoritesViewModel
+import com.example.recipecompapp.features.recipes.presentation.RecipesViewModel
 import com.example.recipecompapp.features.recipes.presentation.model.RecipeUiModel
 import com.example.recipecompapp.features.recipes.ui.RecipesScreen
 import com.example.recipecompapp.ui.theme.RecipeCompAppTheme
-import dagger.hilt.android.EntryPointAccessors
 
 @SuppressLint("FlowOperatorInvokedInComposition")
 @Composable
@@ -41,13 +48,8 @@ fun RecipesApp(
         val navController = rememberNavController()
         val context = LocalContext.current
 
-        val dataStoreManager = remember {
-            EntryPointAccessors.fromApplication(
-                context.applicationContext,
-                DataStoreEntryPoint::class.java
-            ).getFavoriteDataStoreManager()
-        }
-        val favoriteCountFlow = remember { dataStoreManager.getFavoriteCountFlow() }
+        val bottomNavigationViewModel: BottomNavigationViewModel = hiltViewModel()
+        val favoriteCountFlow = bottomNavigationViewModel.favoriteCountFlow
 
         LaunchedEffect(deepLinkIntent) {
             deepLinkIntent?.data?.let { uri ->
@@ -89,6 +91,8 @@ fun RecipesApp(
                 modifier = Modifier.padding(paddingValues)
             ) {
                 composable(Destination.Categories.route) {
+                    val viewModel: CategoriesViewModel = hiltViewModel()
+                    val uiState by viewModel.uiState.collectAsState()
                     val onCategoryClick = remember(navController) {
                         { categoryId: Int, title: String, imageUrl: String ->
                             navController.navigate(
@@ -101,6 +105,7 @@ fun RecipesApp(
                         }
                     }
                     CategoriesScreen(
+                        uiState = uiState,
                         onCategoryClick = onCategoryClick
                     )
                 }
@@ -115,6 +120,8 @@ fun RecipesApp(
                         }
                     )
                 ) { _ ->
+                    val viewModel: RecipesViewModel = hiltViewModel()
+                    val uiState by viewModel.uiState.collectAsState()
                     val onRecipeClick = remember(navController) {
                         { recipeId: Int, _: RecipeUiModel ->
                             Log.d("DEBUG", "Клик по рецепту $recipeId")
@@ -126,12 +133,16 @@ fun RecipesApp(
                         }
                     }
                     RecipesScreen(
+                        uiState = uiState,
                         onRecipeClick = onRecipeClick
                     )
                 }
 
-                composable(Destination.Favorites.route) { _ ->
+                composable(Destination.Favorites.route) {
+                    val viewModel: FavoritesViewModel = hiltViewModel()
+                    val uiState by viewModel.uiState.collectAsState()
                     FavoritesScreen(
+                        uiState = uiState,
                         onRecipeClick = { recipeId ->
                             navController.navigate(
                                 Destination.RecipeDetails.createRoute(
@@ -147,7 +158,19 @@ fun RecipesApp(
                     arguments = listOf(
                         navArgument(Constants.ARG_RECIPE_ID) { type = NavType.IntType })
                 ) { _ ->
+                    val viewModel: RecipeDetailsViewModel = hiltViewModel()
+                    val uiState by viewModel.uiState.collectAsState()
                     RecipeDetailsScreen(
+                        uiState = uiState,
+                        onServingsChange = { viewModel.updatePortions(it) },
+                        onFavoriteClick = { viewModel.toggleFavorite() },
+                        onSharedClick = remember (uiState.recipe) {
+                            {
+                                uiState.recipe?.let { recipe ->
+                                    ShareUtils.shareRecipe(context, recipe.id, recipe.title)
+                                }
+                            }
+                        },
                         onNavigateBack = { navController.popBackStack() }
                     )
                 }
@@ -175,14 +198,3 @@ private fun parseRecipeIdFromUri(uri: Uri): Int? {
 }
 
 fun createRecipeDeepLink(recipeId: Int): String = "$DEEP_LINK_BASE_URL/recipe/$recipeId"
-
-@Preview
-@Composable
-fun RecipesAppPreview() {
-    RecipeCompAppTheme {
-        RecipesApp(
-            deepLinkIntent = null,
-            onDeepLinkConsumed = {}
-        )
-    }
-}

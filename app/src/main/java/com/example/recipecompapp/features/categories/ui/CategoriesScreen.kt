@@ -1,6 +1,5 @@
 package com.example.recipecompapp.features.categories.ui
 
-import android.annotation.SuppressLint
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -15,27 +14,23 @@ import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.recipecompapp.R
 import com.example.recipecompapp.core.ui.screenheader.ScreenHeader
-import com.example.recipecompapp.features.categories.presentation.CategoriesViewModel
+import com.example.recipecompapp.features.categories.presentation.model.CategoriesUiState
+import com.example.recipecompapp.features.categories.presentation.model.CategoryUiModel
 import com.example.recipecompapp.ui.theme.RecipeCompAppTheme
 
 @Composable
 fun CategoriesScreen(
+    uiState: CategoriesUiState,
     modifier: Modifier = Modifier,
     onCategoryClick: (Int, String, String) -> Unit = { _, _, _ -> }
 ) {
-    val viewModel: CategoriesViewModel = hiltViewModel()
-    val uiState by viewModel.uiState.collectAsState()
-
     Column(
         modifier = modifier
             .fillMaxSize()
@@ -93,11 +88,19 @@ fun CategoriesScreen(
     }
 }
 
-@SuppressLint("ViewModelConstructorInComposable")
 @Preview
 @Composable
 fun CategoriesScreenPreview() {
     RecipeCompAppTheme {
-        CategoriesScreen()
+        CategoriesScreen(
+            uiState = CategoriesUiState(
+                isLoading = false,
+                categories = listOf(
+                    CategoryUiModel(1, "Бургеры", "Классические", ""),
+                    CategoryUiModel(2, "Пицца", "Итальянская", "")
+                )
+            ),
+            onCategoryClick = { _, _, _ -> }
+        )
     }
 }

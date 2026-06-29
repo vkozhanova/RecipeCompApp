@@ -12,8 +12,6 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
@@ -21,21 +19,19 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.recipecompapp.core.ui.screenheader.ScreenHeader
 import com.example.recipecompapp.ui.theme.RecipeCompAppTheme
 import com.example.recipecompapp.R
-import com.example.recipecompapp.features.favorites.presentation.FavoritesViewModel
+import com.example.recipecompapp.features.favorites.presentation.model.FavoritesUiState
+import com.example.recipecompapp.features.recipes.presentation.model.RecipeUiModel
 import com.example.recipecompapp.features.recipes.ui.RecipeItem
 
 @Composable
 fun FavoritesScreen(
+    uiState: FavoritesUiState,
     onRecipeClick: (Int) -> Unit,
     modifier: Modifier = Modifier
 ) {
-    val viewModel: FavoritesViewModel = hiltViewModel()
-    val uiState by viewModel.uiState.collectAsState()
-
     Column(
         modifier = modifier
             .fillMaxSize()
@@ -103,6 +99,15 @@ fun FavoritesScreen(
 @Composable
 fun FavoritesScreenPreview() {
     RecipeCompAppTheme {
-        FavoritesScreen(onRecipeClick = {})
+        FavoritesScreen(
+            uiState = FavoritesUiState(
+                isLoading = false,
+                recipes = listOf(
+                    RecipeUiModel(1, "Чизбургер", emptyList(), emptyList(), "", true),
+                    RecipeUiModel(2, "Гамбургер", emptyList(), emptyList(), "", false)
+                )
+            ),
+            onRecipeClick = {}
+        )
     }
 }

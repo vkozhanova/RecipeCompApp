@@ -14,29 +14,24 @@ import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.recipecompapp.R
 import com.example.recipecompapp.core.ui.screenheader.ScreenHeader
-import com.example.recipecompapp.features.recipes.presentation.RecipesViewModel
 import com.example.recipecompapp.features.recipes.presentation.model.RecipeUiModel
+import com.example.recipecompapp.features.recipes.presentation.model.RecipesUiState
 import com.example.recipecompapp.ui.theme.RecipeCompAppTheme
 
 @Composable
 fun RecipesScreen(
+    uiState: RecipesUiState,
     onRecipeClick: (Int, RecipeUiModel) -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    val viewModel: RecipesViewModel = hiltViewModel()
-    val uiState by viewModel.uiState.collectAsState()
-
     Column(
         modifier = modifier
             .fillMaxSize()
@@ -105,46 +100,23 @@ fun RecipesScreen(
 @Composable
 fun RecipesScreenPreview() {
     RecipeCompAppTheme {
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .background(MaterialTheme.colorScheme.background)
-        ) {
-            ScreenHeader(
-                imageResId = R.drawable.bcg_categories,
-                badgeText = "Бургеры"
-            )
-            LazyColumn(
-                modifier = Modifier.fillMaxSize(),
-                verticalArrangement = Arrangement.spacedBy(16.dp),
-                contentPadding = PaddingValues(
-                    start = 16.dp,
-                    end = 16.dp,
-                    top = 16.dp,
-                    bottom = 16.dp
-                )
-            ) {
-                items(5) { index ->
-                    RecipeItem(
-                        recipe = RecipeUiModel(
-                            id = index,
-                            title = when (index) {
-                                0 -> "чизбургер"
-                                1 -> "классический гамбургер"
-                                2 -> "бургер с грибами и сыром"
-                                3 -> "вегетерианский бургер"
-                                else -> "Острый бургер с чили"
-                            }.uppercase(),
-                            ingredients = emptyList(),
-                            method = emptyList(),
-                            imageUrl = "",
-                            isFavorite = index % 2 == 0
-                        ),
-                        onClick = {},
-                        modifier = Modifier.fillMaxWidth()
-                    )
-                }
-            }
-        }
+        RecipesScreen(
+            uiState = RecipesUiState(
+                isLoading = false,
+                error = null,
+                recipes = listOf(
+                    RecipeUiModel(
+                        1, "Чизбургер",
+                        emptyList(),
+                        emptyList(),
+                        "",
+                        true
+                    ),
+                ),
+                categoryTitle = "Бургеры",
+                categoryImageUrl = ""
+            ),
+            onRecipeClick = { _, _ -> }
+        )
     }
 }
