@@ -1,6 +1,5 @@
-package com.example.recipecompapp.model
+package com.example.recipecompapp.data.model
 
-import com.example.recipecompapp.data.model.CategoryDto
 import com.example.recipecompapp.features.categories.presentation.model.toUiModel
 import org.junit.Assert.assertEquals
 import org.junit.Test
