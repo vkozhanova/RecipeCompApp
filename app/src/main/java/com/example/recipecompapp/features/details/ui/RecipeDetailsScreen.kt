@@ -21,8 +21,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.recipecompapp.R
 import com.example.recipecompapp.core.ui.screenheader.ScreenHeader
-import com.example.recipecompapp.core.navigation.ShareUtils
-import com.example.recipecompapp.features.details.presentation.RecipeDetailsViewModel
+import com.example.recipecompapp.features.details.presentation.model.RecipeDetailsUiState
 import com.example.recipecompapp.ui.recipes.model.IngredientUiModel
 import com.example.recipecompapp.features.recipes.presentation.model.RecipeUiModel
 import com.example.recipecompapp.ui.theme.RecipeCompAppTheme
@@ -31,30 +30,13 @@ import kotlin.math.roundToInt
 
 @Composable
 fun RecipeDetailsScreen(
-    viewModel: RecipeDetailsViewModel,
+    uiState: RecipeDetailsUiState,
+    onServingsChange: (Int) -> Unit,
+    onFavoriteClick: () -> Unit,
+    onSharedClick: () -> Unit,
     onNavigateBack: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    val uiState by viewModel.uiState.collectAsState()
-    val context = LocalContext.current
-
-    val onServingsChange = remember {
-        { servings: Int -> viewModel.updatePortions(servings) }
-    }
-    val onFavoriteClick = remember {
-        { viewModel.toggleFavorite() }
-    }
-    val recipe = uiState.recipe
-    val onSharedClick = remember(recipe?.id, recipe?.title) {
-        {
-            ShareUtils.shareRecipe(
-                context,
-                recipe?.id ?: -1,
-                recipe?.title.orEmpty()
-            )
-        }
-    }
-
     Scaffold(
         modifier = modifier,
         containerColor = MaterialTheme.colorScheme.background
@@ -323,14 +305,18 @@ fun RecipeDetailsScreenPreview() {
         imageUrl = null,
     )
     RecipeCompAppTheme {
-        RecipeDetailsContent(
-            recipe = recipe,
-            servings = 2,
-            scaledIngredients = recipe.ingredients,
-            isFavorite = true,
+        RecipeDetailsScreen(
+            uiState = RecipeDetailsUiState(
+                isLoading = false,
+                recipe = recipe,
+                currentPortions = 2,
+                scaledIngredients = recipe.ingredients,
+                isFavorite = true
+            ),
             onServingsChange = {},
             onFavoriteClick = {},
-            onSharedClick = {}
+            onSharedClick = {},
+            onNavigateBack = {}
         )
     }
 }

@@ -1,4 +1,4 @@
-package com.example.recipecompapp.core.ui
+package com.example.recipecompapp.features.bottom.ui
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
