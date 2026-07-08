@@ -9,7 +9,7 @@ import com.example.recipecompapp.data.network.api.RecipesApiService
 import com.example.recipecompapp.fixtures.CategoryTestFixtures
 import com.example.recipecompapp.fixtures.RecipeTestFixtures
 import io.mockk.Runs
-import io.mockk.clearMocks
+import io.mockk.clearAllMocks
 import io.mockk.coEvery
 import io.mockk.coVerify
 import io.mockk.every
@@ -24,14 +24,14 @@ import org.junit.Test
 
 class RecipesRepositoryTest {
     private val api = mockk<RecipesApiService>()
-    private val database = mockk<RecipesDatabase>()
+    private val database = mockk<RecipesDatabase>(relaxed = true)
     private val categoryDao = mockk<CategoryDao>()
     private val recipeDao = mockk<RecipeDao>()
 
     private lateinit var repository: RecipesRepositoryImpl
 
     @Before
-    fun setUp(){
+    fun setUp() {
         every { database.categoryDao() } returns categoryDao
         every { database.recipeDao() } returns recipeDao
         repository = RecipesRepositoryImpl(api, database)
@@ -39,7 +39,7 @@ class RecipesRepositoryTest {
 
     @After
     fun tearDown() {
-        clearMocks(api, database, categoryDao, recipeDao)
+        clearAllMocks()
     }
 
     @Test
@@ -87,31 +87,47 @@ class RecipesRepositoryTest {
             cancelAndIgnoreRemainingEvents()
         }
 
-        coVerify(exactly = 1, timeout = VERIFY_TIMEOUT) {api.getCategories()}
-        coVerify(exactly = 0, timeout = VERIFY_TIMEOUT) {categoryDao.insertCategory(any())}
+        coVerify(exactly = 1, timeout = VERIFY_TIMEOUT) { api.getCategories() }
+        coVerify(exactly = 0, timeout = VERIFY_TIMEOUT) { categoryDao.insertCategory(any()) }
     }
 
     @Test
     fun `getRecipesByCategory returns flow filtered by categoryId`() = runTest {
-        val categoryId = 1
+        val categoryId1 = 1
+        val categoryId2 = 2
 
         val recipeDto1 = RecipeTestFixtures.createRecipeDto(
             id = 1,
-            title = "Паста",
+            title = "Паста Карбонара",
             ingredients = listOf(
                 RecipeTestFixtures.createIngredientDto(
                     quantity = "200",
                     unitOfMeasure = "г",
-                    description = "Паста"
+                    description = "Спагетти"
                 )
             ),
             method = listOf("Отварить", "Смешать"),
-            imageUrl = "pasta.jpg"
+            imageUrl = "carbonara.jpg"
         )
-        val recipeEntity1 = recipeDto1.toEntity(categoryId)
+        val recipeEntity1 = recipeDto1.toEntity(categoryId1)
 
         val recipeDto2 = RecipeTestFixtures.createRecipeDto(
             id = 2,
+            title = "Паста Болоньезе",
+            ingredients = listOf(
+                RecipeTestFixtures.createIngredientDto(
+                    quantity = "200",
+                    unitOfMeasure = "г",
+                    description = "Спагетти"
+                )
+            ),
+            method = listOf("Отварить", "Смешать"),
+            imageUrl = "bolognese.jpg"
+        )
+        val recipeEntity2 = recipeDto2.toEntity(categoryId1)
+
+        val recipeDto3 = RecipeTestFixtures.createRecipeDto(
+            id = 3,
             title = "Бургер",
             ingredients = listOf(
                 RecipeTestFixtures.createIngredientDto(
@@ -123,23 +139,42 @@ class RecipesRepositoryTest {
             method = listOf("Собрать", "Поджарить"),
             imageUrl = "burger.jpg"
         )
-        val recipeEntity2 = recipeDto2.toEntity(categoryId)
+        val recipeEntity3 = recipeDto3.toEntity(categoryId2)
 
-        every { recipeDao.getRecipesList(categoryId.toString()) } returns flowOf(listOf(recipeEntity1, recipeEntity2))
 
-        coEvery { api.getRecipesByCategory(categoryId) } returns emptyList()
+        every { recipeDao.getRecipesList(categoryId1.toString()) } returns flowOf(
+            listOf(
+                recipeEntity1,
+                recipeEntity2
+            )
+        )
+        every { recipeDao.getRecipesList(categoryId2.toString()) } returns flowOf(
+            listOf(
+                recipeEntity3
+            )
+        )
+
+        coEvery { api.getRecipesByCategory(any()) } returns emptyList()
         coEvery { recipeDao.insertRecipesList(any()) } just Runs
 
-        repository.getRecipesByCategory(categoryId).test {
+        repository.getRecipesByCategory(categoryId1).test {
             val recipes = awaitItem()
             assertEquals(2, recipes.size)
-            assertEquals("Паста", recipes[0].title)
-            assertEquals("Бургер", recipes[1].title)
+            assertEquals("Паста Карбонара", recipes[0].title)
+            assertEquals("Паста Болоньезе", recipes[1].title)
             cancelAndIgnoreRemainingEvents()
         }
 
-        coVerify(exactly = 1, timeout = VERIFY_TIMEOUT) { api.getRecipesByCategory(categoryId) }
-        coVerify(exactly = 1, timeout = VERIFY_TIMEOUT) { recipeDao.insertRecipesList(any()) }
+        repository.getRecipesByCategory(categoryId2).test {
+            val recipes = awaitItem()
+            assertEquals(1, recipes.size)
+            assertEquals("Бургер", recipes[0].title)
+            cancelAndIgnoreRemainingEvents()
+        }
+
+        coVerify(exactly = 1, timeout = VERIFY_TIMEOUT) { api.getRecipesByCategory(categoryId1) }
+        coVerify(exactly = 1, timeout = VERIFY_TIMEOUT) { api.getRecipesByCategory(categoryId2) }
+        coVerify(exactly = 2, timeout = VERIFY_TIMEOUT) { recipeDao.insertRecipesList(any()) }
     }
 }
 
