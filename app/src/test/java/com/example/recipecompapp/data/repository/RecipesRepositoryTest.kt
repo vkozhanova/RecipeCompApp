@@ -21,6 +21,7 @@ import kotlinx.coroutines.test.runTest
 import org.junit.After
 import org.junit.Before
 import org.junit.Test
+import java.io.IOException
 
 class RecipesRepositoryTest {
     private val api = mockk<RecipesApiService>()
@@ -78,7 +79,7 @@ class RecipesRepositoryTest {
         val categoryEntity = categoryDto.toEntity()
 
         every { categoryDao.getCategories() } returns flowOf(listOf(categoryEntity))
-        coEvery { api.getCategories() } throws Exception("Network error")
+        coEvery { api.getCategories() } throws IOException("Network error")
 
         repository.getCategories().test {
             val categories = awaitItem()
