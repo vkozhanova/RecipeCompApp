@@ -1,4 +1,4 @@
 package com.example.recipecompapp.features.details.ui
 
-class RecipeDetailsScreenTest {
-}
+//class RecipeDetailsScreenTest {
+//}

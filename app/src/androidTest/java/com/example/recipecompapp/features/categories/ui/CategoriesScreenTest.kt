@@ -1,4 +1,4 @@
 package com.example.recipecompapp.features.categories.ui
 
-class CategoriesScreenTest {
-}
+//class CategoriesScreenTest {
+//}
