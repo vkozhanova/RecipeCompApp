@@ -86,13 +86,13 @@ class RecipesViewModelTest {
 
         viewModel = createViewModel(
             categoryId = 1,
-            categoryTitle = "Бургеры",
-            categoryImageUrl = "burgers.jpg"
+            categoryTitle = "Завтраки",
+            categoryImageUrl = ""
         )
 
         viewModel.uiState.test {
             val state = awaitItem()
-            assertEquals("Бургеры", state.categoryTitle)
+            assertEquals("Завтраки", state.categoryTitle)
             cancelAndIgnoreRemainingEvents()
         }
     }
