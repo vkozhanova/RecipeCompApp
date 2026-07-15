@@ -13,7 +13,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
@@ -105,7 +104,6 @@ fun RecipesApp(
                         }
                     }
                     CategoriesScreen(
-                        uiState = uiState,
                         onCategoryClick = onCategoryClick
                     )
                 }
@@ -133,7 +131,6 @@ fun RecipesApp(
                         }
                     }
                     RecipesScreen(
-                        uiState = uiState,
                         onRecipeClick = onRecipeClick
                     )
                 }
