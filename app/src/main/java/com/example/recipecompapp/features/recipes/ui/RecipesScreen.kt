@@ -14,20 +14,37 @@ import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.recipecompapp.R
 import com.example.recipecompapp.core.ui.screenheader.ScreenHeader
+import com.example.recipecompapp.features.recipes.presentation.RecipesViewModel
 import com.example.recipecompapp.features.recipes.presentation.model.RecipeUiModel
 import com.example.recipecompapp.features.recipes.presentation.model.RecipesUiState
 import com.example.recipecompapp.ui.theme.RecipeCompAppTheme
 
 @Composable
 fun RecipesScreen(
+    onRecipeClick: (Int, RecipeUiModel) -> Unit
+) {
+    val viewModel: RecipesViewModel = hiltViewModel()
+    val uiState by viewModel.uiState.collectAsState()
+    RecipesContent(
+        uiState = uiState,
+        onRecipeClick = onRecipeClick
+    )
+}
+
+@Composable
+fun  RecipesContent(
     uiState: RecipesUiState,
     onRecipeClick: (Int, RecipeUiModel) -> Unit,
     modifier: Modifier = Modifier,
@@ -47,7 +64,7 @@ fun RecipesScreen(
                 modifier = Modifier.fillMaxSize(),
                 contentAlignment = Alignment.Center
             ) {
-                CircularProgressIndicator()
+                CircularProgressIndicator(modifier = Modifier.testTag("loading_indicator"))
             }
         } else {
 
@@ -56,7 +73,10 @@ fun RecipesScreen(
                     modifier = Modifier.fillMaxSize(),
                     contentAlignment = Alignment.Center
                 ) {
-                    Text(text = error, color = MaterialTheme.colorScheme.error)
+                    Text(text = error,
+                        color = MaterialTheme.colorScheme.error,
+                        modifier = Modifier.testTag("error_message")
+                    )
                 }
             } ?: run {
                 if (uiState.recipes.isEmpty()) {
@@ -68,7 +88,9 @@ fun RecipesScreen(
                             text = stringResource(R.string.no_recipes_categories),
                             style = MaterialTheme.typography.bodyLarge,
                             textAlign = TextAlign.Center,
-                            modifier = Modifier.padding(16.dp)
+                            modifier = Modifier
+                                .padding(16.dp)
+                                .testTag("empty_state")
                         )
                     }
                 } else {
@@ -100,7 +122,7 @@ fun RecipesScreen(
 @Composable
 fun RecipesScreenPreview() {
     RecipeCompAppTheme {
-        RecipesScreen(
+        RecipesContent(
             uiState = RecipesUiState(
                 isLoading = false,
                 error = null,

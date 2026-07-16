@@ -13,7 +13,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
@@ -30,10 +29,8 @@ import com.example.recipecompapp.features.bottom.ui.BottomNavigation
 import com.example.recipecompapp.core.navigation.Destination
 import com.example.recipecompapp.core.navigation.ShareUtils
 import com.example.recipecompapp.features.bottom.presentation.BottomNavigationViewModel
-import com.example.recipecompapp.features.categories.presentation.CategoriesViewModel
 import com.example.recipecompapp.features.details.presentation.RecipeDetailsViewModel
 import com.example.recipecompapp.features.favorites.presentation.FavoritesViewModel
-import com.example.recipecompapp.features.recipes.presentation.RecipesViewModel
 import com.example.recipecompapp.features.recipes.presentation.model.RecipeUiModel
 import com.example.recipecompapp.features.recipes.ui.RecipesScreen
 import com.example.recipecompapp.ui.theme.RecipeCompAppTheme
@@ -91,8 +88,6 @@ fun RecipesApp(
                 modifier = Modifier.padding(paddingValues)
             ) {
                 composable(Destination.Categories.route) {
-                    val viewModel: CategoriesViewModel = hiltViewModel()
-                    val uiState by viewModel.uiState.collectAsState()
                     val onCategoryClick = remember(navController) {
                         { categoryId: Int, title: String, imageUrl: String ->
                             navController.navigate(
@@ -105,7 +100,6 @@ fun RecipesApp(
                         }
                     }
                     CategoriesScreen(
-                        uiState = uiState,
                         onCategoryClick = onCategoryClick
                     )
                 }
@@ -120,8 +114,6 @@ fun RecipesApp(
                         }
                     )
                 ) { _ ->
-                    val viewModel: RecipesViewModel = hiltViewModel()
-                    val uiState by viewModel.uiState.collectAsState()
                     val onRecipeClick = remember(navController) {
                         { recipeId: Int, _: RecipeUiModel ->
                             Log.d("DEBUG", "Клик по рецепту $recipeId")
@@ -133,7 +125,6 @@ fun RecipesApp(
                         }
                     }
                     RecipesScreen(
-                        uiState = uiState,
                         onRecipeClick = onRecipeClick
                     )
                 }
@@ -164,7 +155,7 @@ fun RecipesApp(
                         uiState = uiState,
                         onServingsChange = { viewModel.updatePortions(it) },
                         onFavoriteClick = { viewModel.toggleFavorite() },
-                        onSharedClick = remember (uiState.recipe) {
+                        onSharedClick = remember(uiState.recipe) {
                             {
                                 uiState.recipe?.let { recipe ->
                                     ShareUtils.shareRecipe(context, recipe.id, recipe.title)
