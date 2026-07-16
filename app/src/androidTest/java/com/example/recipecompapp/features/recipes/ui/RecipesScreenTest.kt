@@ -4,13 +4,16 @@ import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.junit4.v2.createComposeRule
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
+import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.example.recipecompapp.data.model.IngredientDto
 import com.example.recipecompapp.features.fixtures.RecipeTestFixtures
 import com.example.recipecompapp.features.recipes.presentation.model.RecipesUiState
 import com.example.recipecompapp.features.recipes.presentation.model.toUiModel
 import org.junit.Rule
 import org.junit.Test
+import org.junit.runner.RunWith
 
+@RunWith(AndroidJUnit4::class)
 class RecipesScreenTest {
     @get:Rule
     val composeTestRule = createComposeRule()
@@ -31,6 +34,7 @@ class RecipesScreenTest {
 
     @Test
     fun showsErrorState() {
+        val errorMessage = "Network Error"
         composeTestRule.setContent {
             RecipesContent(
                 uiState = RecipesUiState(
@@ -41,6 +45,7 @@ class RecipesScreenTest {
             )
         }
         composeTestRule.onNodeWithTag("error_message").assertIsDisplayed()
+        composeTestRule.onNodeWithText(errorMessage).assertIsDisplayed()
     }
 
     @Test
