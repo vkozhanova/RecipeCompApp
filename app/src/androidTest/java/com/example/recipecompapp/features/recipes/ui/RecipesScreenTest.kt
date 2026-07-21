@@ -9,14 +9,34 @@ import com.example.recipecompapp.data.model.IngredientDto
 import com.example.recipecompapp.features.fixtures.RecipeTestFixtures
 import com.example.recipecompapp.features.recipes.presentation.model.RecipesUiState
 import com.example.recipecompapp.features.recipes.presentation.model.toUiModel
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.test.UnconfinedTestDispatcher
+import kotlinx.coroutines.test.resetMain
+import kotlinx.coroutines.test.setMain
+import org.junit.After
+import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
 
+@OptIn(ExperimentalCoroutinesApi::class)
 @RunWith(AndroidJUnit4::class)
 class RecipesScreenTest {
     @get:Rule
     val composeTestRule = createComposeRule()
+
+    private val testDispatcher = UnconfinedTestDispatcher()
+
+    @Before
+    fun setup() {
+        Dispatchers.setMain(testDispatcher)
+    }
+
+    @After
+    fun shutDown() {
+        Dispatchers.resetMain()
+    }
 
     @Test
     fun showsLoadingState() {
