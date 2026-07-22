@@ -78,6 +78,7 @@ dependencies {
 
     implementation(libs.hilt.android)
     ksp(libs.hilt.compiler)
+    kspAndroidTest(libs.hilt.compiler)
     implementation(libs.hilt.navigation.compose)
     implementation(libs.coroutines.core)
     implementation(libs.coroutines.android)

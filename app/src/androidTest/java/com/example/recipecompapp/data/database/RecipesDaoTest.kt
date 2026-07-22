@@ -1,19 +1,17 @@
-package com.example.recipecompapp.data.dao
+package com.example.recipecompapp.data.database
 
 import android.content.Context
 import androidx.room.Room
 import androidx.test.core.app.ApplicationProvider
 import androidx.test.ext.junit.runners.AndroidJUnit4
-import com.example.recipecompapp.data.database.RecipesDatabase
 import com.example.recipecompapp.data.database.dao.CategoryDao
 import com.example.recipecompapp.data.database.dao.RecipeDao
 import com.example.recipecompapp.data.database.entity.CategoryEntity
 import com.example.recipecompapp.data.database.entity.RecipeEntity
-import org.junit.Assert.assertEquals
-import org.junit.Assert.assertTrue
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.test.runTest
 import org.junit.After
+import org.junit.Assert
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -64,8 +62,8 @@ class RecipesDaoTest {
         categoryDao.insertCategory(categories)
         val retrieved = categoryDao.getCategories().first()
 
-        assertTrue(retrieved.isNotEmpty())
-        assertEquals(2, retrieved.size)
+        Assert.assertTrue(retrieved.isNotEmpty())
+        Assert.assertEquals(2, retrieved.size)
     }
 
     @Test
@@ -79,12 +77,12 @@ class RecipesDaoTest {
 
         val retrieved = categoryDao.getCategories().first()
 
-        assertEquals(1, retrieved.size)
+        Assert.assertEquals(1, retrieved.size)
         val saved = retrieved.first()
-        assertEquals(1, saved.id)
-        assertEquals("Паста", saved.name)
-        assertEquals("", saved.description)
-        assertEquals("", saved.imageUrl)
+        Assert.assertEquals(1, saved.id)
+        Assert.assertEquals("Паста", saved.name)
+        Assert.assertEquals("", saved.description)
+        Assert.assertEquals("", saved.imageUrl)
     }
 
     @Test
@@ -104,17 +102,17 @@ class RecipesDaoTest {
         recipeDao.insertRecipesList(recipes)
         val retrieved = recipeDao.getRecipesList("1").first()
 
-        assertEquals(2, retrieved.size)
+        Assert.assertEquals(2, retrieved.size)
         retrieved.forEach { recipe ->
-            assertEquals("1", recipe.categoryId)
+            Assert.assertEquals("1", recipe.categoryId)
         }
-        assertTrue(retrieved.map { it.id }.containsAll(listOf(1, 2)))
+        Assert.assertTrue(retrieved.map { it.id }.containsAll(listOf(1, 2)))
     }
 
     @Test
     fun emptyDatabaseReturnsEmptyList() = runTest {
         val categories = categoryDao.getCategories().first()
 
-        assertTrue(categories.isEmpty())
+        Assert.assertTrue(categories.isEmpty())
     }
 }
