@@ -18,6 +18,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
+import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
@@ -64,12 +65,14 @@ class RecipesRepositoryIntegrationTest {
                 imageUrl = ""
             )
         )
-        repository.getCategories().test(timeout = 2.seconds) {
-            awaitItem()
+        val flow = repository.getCategories()
+            flow.test(timeout = 2.seconds) {
             val loaded = awaitItem()
             assertEquals("Бургеры", loaded.first().title)
             cancelAndIgnoreRemainingEvents()
         }
+
+        advanceUntilIdle()
 
         val cached = categoryDao.getCategories().first()
 
