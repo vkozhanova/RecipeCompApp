@@ -1,4 +1,4 @@
-package com.example.recipecompapp.features.categories.ui
+package com.example.recipecompapp.features.categories.screen
 
 import androidx.compose.ui.test.SemanticsNodeInteractionsProvider
 import io.github.kakaocup.compose.node.element.ComposeScreen
