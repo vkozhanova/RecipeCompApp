@@ -62,31 +62,54 @@ android {
 }
 
 tasks.register<JacocoReport>("jacocoTestReport") {
-    description = ""
     dependsOn("testDebugUnitTest")
+
     reports {
         xml.required.set(true)
-        html.required.set(false)
+        html.required.set(true)
     }
 
-    val fileFilter = listOf(
-        "**/R.class", "**/R$*.class", "**/BuildConfig.*",
-        "**/Manifest*.*", "**/*Test*.*", "android/**/*.*"
+    val excludes = listOf(
+        "**/R.class",
+        "**/R$*.class",
+        "**/BuildConfig.*",
+        "**/Manifest*.*",
+        "**/*Test*.*",
+        "android/**/*.*"
     )
 
-    val debugTree = fileTree("${buildDir}/intermediates/javac/debug/compileDebugJavaWithJavac/classes")
-        .exclude(fileFilter)
-    val kotlinTree = fileTree("${buildDir}/tmp/kotlin-classes/debug")
-        .exclude(fileFilter)
-
-    classDirectories.setFrom(files(debugTree, kotlinTree))
-    sourceDirectories.setFrom(
+    classDirectories.setFrom(
         files(
-            "${project.projectDir}/src/main/java",
-            "${project.projectDir}/src/main/kotlin"
+            fileTree("$buildDir/tmp/kotlin-classes/debug") { exclude(excludes) },
+            fileTree("$buildDir/intermediates/javac/debug/classes") { exclude(excludes) }
         )
     )
-    executionData.setFrom(files("${buildDir}/jacoco/testDebugUnitTest.exec"))
+
+    sourceDirectories.setFrom(
+        files(
+            "src/main/java",
+            "src/main/kotlin"
+        )
+    )
+
+    executionData.setFrom(
+        fileTree(buildDir) {
+            include(
+                "jacoco/testDebugUnitTest.exec",
+                "outputs/unit_test_code_coverage/debugUnitTest/testDebugUnitTest.exec"
+            )
+        }
+    )
+}
+
+tasks.withType<Test>().configureEach {
+    if (name == "testDebugUnitTest") {
+        useJUnitPlatform()
+        extensions.configure<JacocoTaskExtension> {
+            isIncludeNoLocationClasses = true
+            excludes = listOf("jdk.internal.*")
+        }
+    }
 }
 
 dependencies {
