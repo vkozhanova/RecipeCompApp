@@ -6,13 +6,13 @@ plugins {
     alias(libs.plugins.kotlin.serialization)
     alias(libs.plugins.ksp)
     alias(libs.plugins.hilt)
+    id ("jacoco")
 }
 
 android {
     namespace = "com.example.recipecompapp"
-    compileSdk {
-        version = release(36)
-    }
+    compileSdk = 36
+
 
     defaultConfig {
         applicationId = "com.example.recipecompapp"
@@ -53,6 +53,47 @@ android {
         unitTests {
             isReturnDefaultValues = true
         }
+    }
+}
+
+
+tasks.register<JacocoReport>("jacocoTestReport") {
+    description = ""
+    dependsOn("testDebugUnitTest")
+
+    reports {
+        xml.required.set(true)
+        html.required.set(false)
+    }
+
+    val fileFilter = listOf(
+        "**/R.class",
+        "**/R$*.class",
+        "**/BuildConfig.*",
+        "**/Manifest*.*",
+        "**/*Test*.*",
+        "android/**/*.*"
+    )
+
+    val debugTree = fileTree("${buildDir}/intermediates/javac/debug/compileDebugJavaWithJavac/classes").exclude(fileFilter)
+    val kotlinTree = fileTree("${buildDir}/tmp/kotlin-classes/debug").exclude(fileFilter)
+
+    classDirectories.setFrom(files(debugTree, kotlinTree))
+
+    sourceDirectories.setFrom(
+        files(
+            "${project.projectDir}/src/main/java",
+            "${project.projectDir}/src/main/kotlin"
+        )
+    )
+
+    executionData.setFrom(files("${buildDir}/jacoco/testDebugUnitTest.exec"))
+}
+
+tasks.withType<Test> {
+    useJUnitPlatform()
+    extensions.configure<JacocoTaskExtension> {
+        isIncludeNoLocationClasses = true
     }
 }
 
