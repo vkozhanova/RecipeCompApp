@@ -2,16 +2,17 @@ plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.compose)
-    id ("kotlin-parcelize")
+    id("kotlin-parcelize")
     alias(libs.plugins.kotlin.serialization)
     alias(libs.plugins.ksp)
     alias(libs.plugins.hilt)
-    id ("jacoco")
 }
 
 android {
     namespace = "com.example.recipecompapp"
-    compileSdk = 36
+    compileSdk {
+        version = release(36)
+    }
 
 
     defaultConfig {
@@ -56,50 +57,10 @@ android {
     }
 }
 
-
-tasks.register<JacocoReport>("jacocoTestReport") {
-    description = ""
-    dependsOn("testDebugUnitTest")
-
-    reports {
-        xml.required.set(true)
-        html.required.set(false)
-    }
-
-    val fileFilter = listOf(
-        "**/R.class",
-        "**/R$*.class",
-        "**/BuildConfig.*",
-        "**/Manifest*.*",
-        "**/*Test*.*",
-        "android/**/*.*"
-    )
-
-    val debugTree = fileTree("${buildDir}/intermediates/javac/debug/compileDebugJavaWithJavac/classes").exclude(fileFilter)
-    val kotlinTree = fileTree("${buildDir}/tmp/kotlin-classes/debug").exclude(fileFilter)
-
-    classDirectories.setFrom(files(debugTree, kotlinTree))
-
-    sourceDirectories.setFrom(
-        files(
-            "${project.projectDir}/src/main/java",
-            "${project.projectDir}/src/main/kotlin"
-        )
-    )
-
-    executionData.setFrom(files("${buildDir}/jacoco/testDebugUnitTest.exec"))
-}
-
-tasks.withType<Test> {
-    useJUnitPlatform()
-    extensions.configure<JacocoTaskExtension> {
-        isIncludeNoLocationClasses = true
-    }
-}
-
 dependencies {
+    testRuntimeOnly("org.junit.vintage:junit-vintage-engine:5.10.0")
     androidTestImplementation(libs.kaspresso)
-    androidTestImplementation (libs.kaspresso.compose)
+    androidTestImplementation(libs.kaspresso.compose)
     androidTestImplementation(libs.androidx.test.runner)
     androidTestImplementation(libs.androidx.test.rules)
 

@@ -62,13 +62,3 @@ jobs:
           name: app-debug-apk
           path: app/build/outputs/apk/debug/*.apk
           retention-days: 10
-
-      - name: Generate coverage report
-        run: ./gradlew jacocoTestReport
-
-      - name: Upload coverage to Codecov
-        uses: codecov/codecov-action@v4
-        with:
-          files: app/build/reports/jacoco/jacocoTestReport/jacocoTestReport.xml
-          flags: unittests
-          fail_ci_if_error: false
