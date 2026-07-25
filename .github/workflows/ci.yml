@@ -35,6 +35,17 @@ jobs:
       - name: Run unit tests
         run: ./gradlew test
 
+      - name: Generate coverage report
+        run: ./gradlew jacocoTestReport
+
+      - name: Upload coverage to Codecov
+        uses: codecov/codecov-action@v4
+        with:
+         token: ${{ secrets.CODECOV_TOKEN }}
+         files: app/build/reports/jacoco/jacocoTestReport/xml/jacocoTestReport.xml
+         flags: unittests
+         fail_ci_if_error: false
+
       - name: Run lint
         run: ./gradlew lint
 
