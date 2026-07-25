@@ -11,7 +11,8 @@ import junit.framework.TestCase.assertFalse
 import junit.framework.TestCase.assertNull
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.test.UnconfinedTestDispatcher
+import kotlinx.coroutines.test.StandardTestDispatcher
+import kotlinx.coroutines.test.TestCoroutineScheduler
 import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
@@ -37,7 +38,8 @@ class RecipesViewHiltModelTest {
     lateinit var repository: RecipesRepository
 
     private lateinit var viewModel: RecipesViewModel
-    private val testDispatcher = UnconfinedTestDispatcher()
+    private val testScheduler = TestCoroutineScheduler()
+    private val testDispatcher = StandardTestDispatcher(testScheduler)
 
     @Before
     fun setup() {
@@ -63,6 +65,7 @@ class RecipesViewHiltModelTest {
 
     @Test
     fun testRecipesLoadingSuccessfully() = runTest(testDispatcher) {
+        testScheduler.advanceUntilIdle()
         val state = viewModel.uiState.value
         assertFalse(state.isLoading)
         assertNull(state.error)

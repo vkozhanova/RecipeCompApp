@@ -53,6 +53,7 @@ fun  RecipesContent(
         modifier = modifier
             .fillMaxSize()
             .background(MaterialTheme.colorScheme.background)
+            .testTag("recipes_screen")
     ) {
         ScreenHeader(
             imageUrl = uiState.categoryImageUrl.takeIf { it.isNotEmpty() },

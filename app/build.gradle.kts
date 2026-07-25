@@ -57,6 +57,12 @@ android {
 }
 
 dependencies {
+    androidTestImplementation(libs.kaspresso)
+    androidTestImplementation (libs.kaspresso.compose)
+    androidTestImplementation(libs.androidx.test.runner)
+    androidTestImplementation(libs.androidx.test.rules)
+
+
     androidTestImplementation(libs.mockwebserver)
     androidTestImplementation(libs.room.testing)
     androidTestImplementation(libs.hilt.android.testing)
@@ -67,8 +73,6 @@ dependencies {
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
     androidTestImplementation(libs.androidx.compose.ui.test.junit4)
-    androidTestImplementation(libs.androidx.runner.v162)
-    androidTestImplementation(libs.androidx.rules.v162)
     androidTestImplementation(platform(libs.androidx.compose.bom))
 
     testImplementation(libs.junit)

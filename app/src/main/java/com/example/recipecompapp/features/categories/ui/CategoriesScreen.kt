@@ -52,6 +52,7 @@ fun CategoriesContent(
         modifier = modifier
             .fillMaxSize()
             .background(MaterialTheme.colorScheme.background)
+            .testTag("categories_screen")
     ) {
         ScreenHeader(
             imageResId = R.drawable.bcg_categories,
@@ -81,7 +82,8 @@ fun CategoriesContent(
                     columns = GridCells.Fixed(2),
                     modifier = Modifier
                         .fillMaxSize()
-                        .padding(horizontal = 16.dp),
+                        .padding(horizontal = 16.dp)
+                        .testTag("categories_grid"),
                     contentPadding = PaddingValues(top = 16.dp, bottom = 16.dp),
                     horizontalArrangement = Arrangement.spacedBy(16.dp),
                     verticalArrangement = Arrangement.spacedBy(16.dp)
