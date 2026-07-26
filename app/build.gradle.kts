@@ -2,10 +2,11 @@ plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.compose)
-    id ("kotlin-parcelize")
+    id("kotlin-parcelize")
     alias(libs.plugins.kotlin.serialization)
     alias(libs.plugins.ksp)
     alias(libs.plugins.hilt)
+    id("jacoco")
 }
 
 android {
@@ -13,6 +14,7 @@ android {
     compileSdk {
         version = release(36)
     }
+
 
     defaultConfig {
         applicationId = "com.example.recipecompapp"
@@ -25,6 +27,9 @@ android {
     }
 
     buildTypes {
+        debug {
+            enableUnitTestCoverage = true
+        }
         release {
             isMinifyEnabled = false
             proguardFiles(
@@ -56,9 +61,61 @@ android {
     }
 }
 
+tasks.register<JacocoReport>("jacocoTestReport") {
+    dependsOn("testDebugUnitTest")
+
+    reports {
+        xml.required.set(true)
+        html.required.set(true)
+    }
+
+    val excludes = listOf(
+        "**/R.class",
+        "**/R$*.class",
+        "**/BuildConfig.*",
+        "**/Manifest*.*",
+        "**/*Test*.*",
+        "android/**/*.*"
+    )
+
+    classDirectories.setFrom(
+        files(
+            fileTree("$buildDir/tmp/kotlin-classes/debug") { exclude(excludes) },
+            fileTree("$buildDir/intermediates/javac/debug/classes") { exclude(excludes) }
+        )
+    )
+
+    sourceDirectories.setFrom(
+        files(
+            "src/main/java",
+            "src/main/kotlin"
+        )
+    )
+
+    executionData.setFrom(
+        fileTree(buildDir) {
+            include(
+                "jacoco/testDebugUnitTest.exec",
+                "outputs/unit_test_code_coverage/debugUnitTest/testDebugUnitTest.exec"
+            )
+        }
+    )
+}
+
+tasks.withType<Test>().configureEach {
+    if (name == "testDebugUnitTest") {
+        useJUnitPlatform()
+        extensions.configure<JacocoTaskExtension> {
+            isIncludeNoLocationClasses = true
+            excludes = listOf("jdk.internal.*")
+        }
+    }
+}
+
 dependencies {
+    testRuntimeOnly("org.junit.vintage:junit-vintage-engine:5.10.0")
     androidTestImplementation(libs.kaspresso)
-    androidTestImplementation (libs.kaspresso.compose)
+    androidTestImplementation(libs.kaspresso.compose)
     androidTestImplementation(libs.androidx.test.runner)
     androidTestImplementation(libs.androidx.test.rules)
 

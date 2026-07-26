@@ -1,1 +1,2 @@
+[![Android CI](https://github.com/vkozhanova/RecipeCompApp/actions/workflows/ci.yml/badge.svg?branch=master)](https://github.com/vkozhanova/RecipeCompApp/actions/workflows/ci.yml)
 Приложение с рецептами на Jetpack Compose
