@@ -1,8 +1,10 @@
 package com.example.recipecompapp.features.bottom.ui
 
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.navigationBarsPadding
@@ -140,13 +142,17 @@ fun NavigationButtonIcon(
                 Spacer(modifier = Modifier.width(4.dp))
                 Badge(
                     containerColor = MaterialTheme.colorScheme.tertiary,
-                    modifier = Modifier,
+                    modifier = Modifier.size(20.dp),
                 ) {
-                    Text(
-                        text = counter.toString(),
-                        style = recipesAppTypography.labelLarge,
-                        modifier = Modifier.padding(horizontal = 4.dp),
-                    )
+                    Box(
+                        contentAlignment = Alignment.Center,
+                        modifier = Modifier.fillMaxSize()
+                    ) {
+                        Text(
+                            text = counter.toString(),
+                            style = recipesAppTypography.labelSmall,
+                        )
+                    }
                 }
             }
         }
