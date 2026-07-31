@@ -37,11 +37,12 @@ fun RecipeDetailsScreen(
     onNavigateBack: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    Scaffold(
-        modifier = modifier,
-        containerColor = MaterialTheme.colorScheme.background
-    ) { paddingValues ->
-        Box(modifier = Modifier.padding(paddingValues)) {
+    Box(
+        modifier = modifier
+            .fillMaxSize()
+            .background(MaterialTheme.colorScheme.background)
+    ) {
+        Box(modifier = modifier) {
             if (uiState.isLoading) {
                 Box(
                     modifier = Modifier.fillMaxSize(),

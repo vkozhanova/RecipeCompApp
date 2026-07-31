@@ -96,11 +96,12 @@ fun  RecipesContent(
                     }
                 } else {
                     LazyColumn(
-                        modifier = Modifier
-                            .fillMaxSize()
-                            .padding(vertical = 16.dp),
+                        modifier = Modifier.weight(1f),
                         verticalArrangement = Arrangement.spacedBy(8.dp),
-                        contentPadding = PaddingValues(horizontal = 16.dp)
+                        contentPadding = PaddingValues(
+                            horizontal = 16.dp,
+                            vertical = 16.dp
+                        )
                     ) {
                         items(
                             items = uiState.recipes,
