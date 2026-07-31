@@ -1,7 +1,7 @@
 # RecipeCompApp
 
 [![Android CI](https://github.com/vkozhanova/RecipeCompApp/actions/workflows/ci.yml/badge.svg?branch=master)](https://github.com/vkozhanova/RecipeCompApp/actions/workflows/ci.yml)
-Android-приложение для просмотра рецептов
+Android-приложение для просмотра рецептов, разработанное с использованием Jetpack Compose и современных компонентов Android Jetpack.
 ## Возможности
 - Просмотр списка рецептов
 - Просмотр рецептов по категориям
@@ -9,31 +9,19 @@ Android-приложение для просмотра рецептов
 - Добавление и удаление избранных рецептов
 - Локальное сохранение данных
 - Работа с удалённым API
-- Современный интерфейс на Jetpack Compose
-## Скриншоты
+## Demo
 <table>
 <tr>
 <td align="center"><b>Categories</b></td>
-<td align="center"><b>Recipes</b></td>
 <td align="center"><b>Details</b></td>
-<td align="center"><b>Favorites</b></td>
 </tr>
-
 <tr>
-<td><img src="screenshots/png/home_categories.png" width="200"></td>
-<td><img src="screenshots/png/recipes.png" width="200"></td>
-<td><img src="screenshots/png/details.png" width="200"></td>
-<td><img src="screenshots/png/favorites.png" width="200"></td>
-</tr>
-
-<tr>
-<td><img src="screenshots/gif/cat.gif" width="200"></td>
-<td><img src="screenshots/gif/recip.gif" width="200"></td>
-<td><img src="screenshots/gif/det.gif" width="200"></td>
-<td><img src="screenshots/gif/favor.gif" width="200"></td>
+<td><img src="screenshots/gif/cat.gif" width="345" alt=""></td>
+<td><img src="screenshots/gif/det.gif" width="344" alt=""></td>
 </tr>
 </table>
-## Что было реализовано
+
+## Реализовано
 - современный UI на Jetpack Compose;
 - архитектура MVVM;
 - внедрение зависимостей через Hilt;
@@ -45,20 +33,18 @@ Android-приложение для просмотра рецептов
 - автоматические тесты и отчёты покрытия кода.
 ## Технологии
 - Kotlin
-- Jetpack Compose
-- Material 3
+- Jetpack Compose + Material 3
 - MVVM
-- Repository Pattern
-- Hilt (Dependency Injection)
+- Hilt
+- Navigation Compose
 - Retrofit
-- Kotlinx Serialization
 - Room
 - DataStore
-- Navigation Compose
 - Coil
 - Coroutines + Flow
+- Kotlinx Serialization
 ## Архитектура
-Проект разделён на слои:
+Проект построен по архитектуре MVVM с разделением ответственности между слоями UI, ViewModel и Repository.
 ```
 UI (Compose)
       │
@@ -85,19 +71,42 @@ app
 ├── core
 │   ├── navigation
 │   └── ui
+│       └── screenheader
 ├── data
 │   ├── database
-│   ├── network
+│   │   ├── converter
+│   │   ├── dao
+│   │   └── entity 
 │   ├── local
-│   ├── repository
-│   └── model
+│   │   ├── datastore
+│   │   └── preferences
+│   ├── model
+│   ├── network
+│   │   └── api
+│   └── repository
 ├── di
 ├── features
+│   ├── bottom
+│   │   ├── presentation
+│   │   └── ui
 │   ├── categories
-│   ├── recipes
+│   │   ├── presentation
+│   │   │   └── model
+│   │   └── ui
 │   ├── details
-│   └── favorites
+│   │   ├── presentation
+│   │   │   └── model
+│   │   └── ui
+│   ├── favorites
+│   │   ├── presentation
+│   │   │   └── model
+│   │   └── ui
+│   ├── recipes
+│   │   ├── presentation
+│   │   │   └── model
+│   │   └── ui
 └── ui
+    └── theme
 ```
 ## Тестирование
 Покрытие кода собирается с использованием **JaCoCo**.
@@ -115,8 +124,16 @@ app
 - сборка проекта;
 - запуск тестов;
 - проверка успешности сборки.
+## Запуск проекта
+1. Клонируйте репозиторий:
+```bash
+git clone https://github.com/vkozhanova/RecipeCompApp.git
+```
+2. Откройте проект в Android Studio.
+3. Дождитесь синхронизации Gradle.
+4. Запустите приложение на эмуляторе или физическом устройстве.
 ---
 ## Автор
 **Vera Kozhanova**
 
-GitHub: https://github.com/vkozhanova
+GitHub: [@vkozhanova](https://github.com/vkozhanova)
