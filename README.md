@@ -16,8 +16,8 @@ Android-приложение для просмотра рецептов, раз�
 <td align="center"><b>Details</b></td>
 </tr>
 <tr>
-<td><img src="screenshots/gif/demo1.gif" alt=""></td>
-<td><img src="screenshots/gif/demo2.gif" alt=""></td>
+<td><img src="screenshots/gif/demo1.gif" width="260" alt=""></td>
+<td><img src="screenshots/gif/demo2.gif" width="260" alt=""></td>
 </tr>
 </table>
 
