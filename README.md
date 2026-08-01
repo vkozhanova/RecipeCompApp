@@ -1,64 +1,48 @@
 # RecipeCompApp
 
 [![Android CI](https://github.com/vkozhanova/RecipeCompApp/actions/workflows/ci.yml/badge.svg?branch=master)](https://github.com/vkozhanova/RecipeCompApp/actions/workflows/ci.yml)
-Android-приложение для просмотра рецептов
+Android-приложение для просмотра рецептов, разработанное с использованием Jetpack Compose и современных компонентов Android Jetpack.
 ## Возможности
+- Просмотр категорий рецептов
 - Просмотр списка рецептов
-- Просмотр рецептов по категориям
-- Детальная информация о рецепте
-- Добавление и удаление избранных рецептов
-- Локальное сохранение данных
-- Работа с удалённым API
-- Современный интерфейс на Jetpack Compose
-## Скриншоты
+- Просмотр подробной информации
+- Добавление рецептов в избранное
+- Локальное сохранение избранного
+- Загрузка данных из удалённого API
+## Demo
 <table>
 <tr>
 <td align="center"><b>Categories</b></td>
-<td align="center"><b>Recipes</b></td>
 <td align="center"><b>Details</b></td>
-<td align="center"><b>Favorites</b></td>
 </tr>
-
 <tr>
-<td><img src="screenshots/png/home_categories.png" width="200"></td>
-<td><img src="screenshots/png/recipes.png" width="200"></td>
-<td><img src="screenshots/png/details.png" width="200"></td>
-<td><img src="screenshots/png/favorites.png" width="200"></td>
-</tr>
-
-<tr>
-<td><img src="screenshots/gif/cat.gif" width="200"></td>
-<td><img src="screenshots/gif/recip.gif" width="200"></td>
-<td><img src="screenshots/gif/det.gif" width="200"></td>
-<td><img src="screenshots/gif/favor.gif" width="200"></td>
+<td><img src="screenshots/gif/demo1.gif" alt=""></td>
+<td><img src="screenshots/gif/demo2.gif" alt=""></td>
 </tr>
 </table>
-## Что было реализовано
+
+## Реализовано
 - современный UI на Jetpack Compose;
-- архитектура MVVM;
-- внедрение зависимостей через Hilt;
-- локальное хранение данных в Room;
-- хранение пользовательских настроек в DataStore;
-- получение данных по сети через Retrofit;
-- навигация Navigation Compose;
-- автоматическая сборка через GitHub Actions;
-- автоматические тесты и отчёты покрытия кода.
+- разделение приложения по принципу MVVM;
+- офлайн-кэширование данных;
+- сохранение избранных рецептов;
+- работа с REST API;
+- автоматическое внедрение зависимостей;
+- автоматическая сборка и тестирование через GitHub Actions
 ## Технологии
 - Kotlin
 - Jetpack Compose
 - Material 3
-- MVVM
-- Repository Pattern
-- Hilt (Dependency Injection)
+- Coroutines + Flow
+- Hilt
+- Navigation Compose
 - Retrofit
 - Kotlinx Serialization
 - Room
 - DataStore
-- Navigation Compose
 - Coil
-- Coroutines + Flow
 ## Архитектура
-Проект разделён на слои:
+Проект построен по архитектуре MVVM с разделением ответственности между слоями UI, ViewModel и Repository.
 ```
 UI (Compose)
       │
@@ -71,7 +55,7 @@ Remote API (Retrofit)
 Local Database (Room)
 DataStore
 ```
-Для упрощения поддержки и масштабирования, каждая функциональность вынесена в отдельный feature-модуль по пакетам:
+Для упрощения поддержки и масштабирования код разделён на feature-пакеты по функциональным областям:
 ```
 features/
     categories/
@@ -83,20 +67,14 @@ features/
 ```
 app
 ├── core
-│   ├── navigation
-│   └── ui
 ├── data
-│   ├── database
-│   ├── network
-│   ├── local
-│   ├── repository
-│   └── model
 ├── di
 ├── features
-│   ├── categories
+│   ├── bottom
 │   ├── recipes
 │   ├── details
-│   └── favorites
+│   ├── favorites
+│   └── categories
 └── ui
 ```
 ## Тестирование
@@ -104,19 +82,29 @@ app
 ###  В проекте реализованы:
 - Unit-тесты
 - Instrumentation-тесты
-- Интеграционные тесты
 - UI-тесты Jetpack Compose
-- End-to-End тесты
-- Hilt Test
+
+  Используемые инструменты:
+- JaCoCo
+- Hilt Testing
 - Kaspresso
 ## CI
 Для проекта настроен GitHub Actions.
 При каждом push и pull request автоматически выполняются:
 - сборка проекта;
-- запуск тестов;
+- запуск unit- и instrumentation-тестов;
+- генерация отчёта покрытия JaCoCo;
 - проверка успешности сборки.
+## Запуск проекта
+1. Клонируйте репозиторий:
+```bash
+git clone https://github.com/vkozhanova/RecipeCompApp.git
+```
+2. Откройте проект в Android Studio.
+3. Дождитесь синхронизации Gradle.
+4. Запустите приложение на эмуляторе или физическом устройстве.
 ---
 ## Автор
 **Vera Kozhanova**
 
-GitHub: https://github.com/vkozhanova
+GitHub: [@vkozhanova](https://github.com/vkozhanova)
